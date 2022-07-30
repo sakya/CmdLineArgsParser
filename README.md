@@ -30,8 +30,15 @@ The `ShowUsage` method prints to the console the options and the help text
 
 Example output:
 ```
+Usage:
+Demo.exe VERB --input VALUE --output VALUE [OPTIONS]
+
+Verb:
+  Backup                      Description of backup verb
+  Copy                        Description of copy verb
+  Delete                      Description of delete verb
+
 General:
-  -c, --command=VALUE         The command to execute on the file
   -i, --input=VALUE           The input file full path
   -o, --output=VALUE          The output file full path
   -w, --overwrite             Overwrite output without warning

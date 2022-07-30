@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -193,7 +194,7 @@ namespace CmdLineArgsParser
 
             // Usage line
             Console.WriteLine("Usage:");
-            var usage = $"{Assembly.GetCallingAssembly().GetName().Name}";
+            var usage = $"{Path.GetFileName(Assembly.GetCallingAssembly().Location)}";
             if (verb != null)
                 usage = $"{usage} {(verb.Option.Required ? "VERB" : "[VERB]")}";
             foreach (var req in properties.Where(p => !p.Option.Verb && p.Option.Required).OrderBy(p => p.Option.Name)) {

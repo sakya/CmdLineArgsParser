@@ -7,7 +7,7 @@ namespace Demo
     {
         public static void Main(string[] args)
         {
-            string[] testArgs = new string[]
+            string[] testArgs =
             {
                 "backup",
                 "--input", "/home/user/file",
