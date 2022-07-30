@@ -3,9 +3,6 @@ using System.Text;
 
 namespace CmdLineArgsParser.Extensions
 {
-    /// <summary>
-    /// https://www.codeproject.com/articles/51488/implementing-word-wrap-in-c
-    /// </summary>
     public static class StringExtensions
     {
         public static string Capitalize(this string str)
@@ -24,6 +21,7 @@ namespace CmdLineArgsParser.Extensions
         /// <param name="str">Text to be word wrapped</param>
         /// <param name="width">Width, in characters, to which the text
         /// should be word wrapped</param>
+        /// <remarks>https://www.codeproject.com/articles/51488/implementing-word-wrap-in-c</remarks>
         /// <returns>The modified text</returns>
         public static string WordWrap(this string str, int width)
         {
