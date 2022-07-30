@@ -11,6 +11,20 @@ public class Errors : BaseTest
     }
 
     [Test]
+    public void InvalidVerb()
+    {
+        Parser.Parse<Options>(
+            new ParserSettings(),
+            new[]
+            {
+                "testVerb",
+            },
+            out Errors);
+        CheckErrors(new[] { "Invalid value for verb option: testVerb" });
+    }
+
+
+    [Test]
     public void InvalidOption()
     {
         Parser.Parse<Options>(

@@ -276,7 +276,7 @@ namespace CmdLineArgsParser
             object value = GetValueFromString(option.Property.PropertyType, stringValue, out var expectedType);
             if (value == null) {
                 if (option.Option.Verb)
-                    errors.Add(new ParserError(option.Option.Name, $"Invalid value for verb option (expected {expectedType}): {stringValue}"));
+                    errors.Add(new ParserError(option.Option.Name, $"Invalid value for verb option: {stringValue}"));
                 else
                     errors.Add(new ParserError(option.Option.Name, $"Invalid value for option '{option.Option.Name}' (expected {expectedType}): {stringValue}"));
                 return;
