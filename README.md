@@ -1,4 +1,6 @@
 # CmdLineArgsParser
+[![CodeFactor](https://www.codefactor.io/repository/github/sakya/cmdlineargsparser/badge)](https://www.codefactor.io/repository/github/sakya/cmdlineargsparser)
+
 CmdLineArgsParser helps you parse command line arguments.
 
 Define a class containing the options you want to parse and then call the `Parse` method.
