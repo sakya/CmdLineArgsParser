@@ -13,7 +13,7 @@ When defining the options you can specify:
 - **Section**: the section this option belongs to. This is only used by the `ShowUsage` method. If no section name is set the option belongs to the 'General' section.
 
 Supported option type:
-- **bool**: set to true if the argument is present (e.g. `--option` or `-o`). Multiple boolean options can be set using the short name (e.g. `-op`)
+- **bool**: set to true if the argument is passed (e.g. `--option` or `-o`). Multiple boolean options can be set using the short name (e.g. `-op`)
 - **enum**: set to the value after the argument (e.g. `--enumOpt value`)
 - **string**: set to the value after the argument (e.g. `--option "string value"`)
 - **int**: set to the value after the argument (e.g. `--intOpt 5`)

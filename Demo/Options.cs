@@ -5,10 +5,20 @@ namespace Demo;
 
 public class Options : IOptions
 {
-    [Option("command", ShortName = 'c',
+    public enum Verbs
+    {
+        [Description("Description of backup verb")]
+        Backup,
+        [Description("Description of copy verb")]
+        Copy,
+        [Description("Description of delete verb")]
+        Delete,
+    }
+
+    [Option("",
         Description = "The command to execute on the file",
-        Required = true, ValidValues = "copy;delete;backup")]
-    public string? Command { get; set; }
+        Verb = true, Required = true)]
+    public Verbs Command { get; set; }
 
     [Option("input", ShortName = 'i',
         Description = "The input file full path",

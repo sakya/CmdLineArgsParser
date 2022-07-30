@@ -29,6 +29,20 @@ namespace CmdLineArgsParser
             public PropertyInfo Property { get; private set; }
             public OptionAttribute Option { get; private set; }
             public bool Set { get; set; }
+
+            public bool HasValuesList
+            {
+                get
+                {
+                    if (Option?.ValidValues?.Length > 0)
+                        return true;
+                    var propertyType = Property.PropertyType;
+                    if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                        propertyType = propertyType.GetGenericArguments().FirstOrDefault();
+
+                    return propertyType?.IsEnum == true;
+                }
+            }
         }
         #endregion
 
@@ -153,7 +167,10 @@ namespace CmdLineArgsParser
             // Check required options
             foreach (var p in properties) {
                 if (p.Option.Required && !p.Set) {
-                    errors.Add(new ParserError(p.Option.Name, $"Required option '{p.Option.Name}' not set"));
+                    if (p.Option.Verb)
+                        errors.Add(new ParserError(p.Option.Name, $"Required verb option not set"));
+                    else
+                        errors.Add(new ParserError(p.Option.Name, $"Required option '{p.Option.Name}' not set"));
                 }
             }
 
@@ -170,12 +187,74 @@ namespace CmdLineArgsParser
                 throw new ArgumentException($"{nameof(columnsForName)} must be greater than zero",
                     nameof(columnsForName));
 
-            var sections = GetProperties<T>()
-                .GroupBy(p => p.Option.Section);
+            ValidateOptionsType<T>();
+            var properties = GetProperties<T>();
+            var verb = properties.FirstOrDefault(p => p.Option.Verb);
+
+            // Usage line
+            Console.WriteLine("Usage:");
+            var usage = $"{Assembly.GetCallingAssembly().GetName().Name}";
+            if (verb != null)
+                usage = $"{usage} {(verb.Option.Required ? "VERB" : "[VERB]")}";
+            foreach (var req in properties.Where(p => !p.Option.Verb && p.Option.Required).OrderBy(p => p.Option.Name)) {
+                usage = $"{usage} --{req.Option.Name} VALUE";
+            }
+            if (properties.Any(p => !p.Option.Verb && !p.Option.Required))
+                usage = $"{usage} [OPTIONS]";
+            Console.WriteLine(usage);
+
+            Console.WriteLine();
+            // Options
+            // Verb first
+            if (verb != null && verb.HasValuesList) {
+                Console.WriteLine("Verb:");
+                if (verb.Option.ValidValues?.Length > 0) {
+                    foreach (var v in verb.Option.ValidValues) {
+                        Console.WriteLine($"  {v}");
+                    }
+                } else {
+                    var propertyType = verb.Property.PropertyType;
+                    if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                        propertyType = propertyType.GetGenericArguments().FirstOrDefault();
+                    if (propertyType != null) {
+                        var enumValues = Enum.GetNames(propertyType);
+                        foreach (var v in enumValues) {
+                            Console.Write($"  {v}{ new string(' ', columnsForName - v.Length - 2) }");
+
+                            var enumVal = Enum.Parse(propertyType, v);
+                            var type = enumVal.GetType();
+                            var memInfo = type.GetMember(enumVal.ToString());
+                            var attribute = memInfo[0].GetCustomAttribute(typeof(DescriptionAttribute), false) as DescriptionAttribute;
+                            if (attribute != null) {
+                                var desc = attribute.Description;
+                                var wrappedText = desc.WordWrap(Console.WindowWidth - columnsForName).TrimEnd();
+                                var lines = wrappedText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                                for (int i = 0; i < lines.Length; i++) {
+                                    var line = lines[i];
+                                    if (i == 0)
+                                        Console.Write(line);
+                                    else {
+                                        Console.WriteLine();
+                                        Console.Write($"{new string(' ', columnsForName)}{line}");
+                                    }
+                                }
+
+                            }
+                            Console.WriteLine();
+                        }
+                    }
+                }
+
+                Console.WriteLine();
+            }
+
+            var sections = properties.GroupBy(p => p.Option.Section);
             foreach (var section in sections) {
                 Console.WriteLine($"{ (string.IsNullOrEmpty(section.Key) ? "General" : section.Key) }:");
                 foreach (var property in section.OrderBy(p => p.Option.Name)) {
                     var opt = property.Option;
+                    if (opt.Verb)
+                        continue;
 
                     StringBuilder sb = new StringBuilder();
                     sb.Append("  ");
@@ -248,6 +327,11 @@ namespace CmdLineArgsParser
                     throw new Exception($"Duplicated option short name '{opt.ShortName}'");
                 }
 
+                // Bool options cannot be required
+                if (property.Property.PropertyType.IsAssignableFrom(typeof(bool)) && property.Option.Required) {
+                    throw new Exception($"Bool option '{opt.Name}' cannot be required");
+                }
+
                 var validValues = opt.GetValidValues();
                 if (validValues?.Length > 0) {
                     // Check valid values
@@ -289,9 +373,11 @@ namespace CmdLineArgsParser
                     array = Array.CreateInstance(option.Property.PropertyType.GetElementType(), 1);
                 } else {
                     Type elementType = array.GetType().GetElementType();
-                    Array newArray = Array.CreateInstance(elementType, array.Length + 1);
-                    Array.Copy(array, newArray, Math.Min(array.Length, newArray.Length));
-                    array = newArray;
+                    if (elementType != null) {
+                        Array newArray = Array.CreateInstance(elementType, array.Length + 1);
+                        Array.Copy(array, newArray, Math.Min(array.Length, newArray.Length));
+                        array = newArray;
+                    }
                 }
 
                 array.SetValue(value, array.Length - 1);

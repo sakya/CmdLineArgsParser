@@ -9,7 +9,7 @@ namespace Demo
         {
             string[] testArgs = new string[]
             {
-                "--command", "backup",
+                "backup",
                 "--input", "/home/user/file",
                 "-yw",
                 "-r", "5"

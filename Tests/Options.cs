@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.SymbolStore;
 using CmdLineArgsParser;
 using CmdLineArgsParser.Attributes;
@@ -10,7 +11,9 @@ public class Options : IOptions
 {
     public enum Verbs
     {
+        [Display(Description = "Description of Verb1")]
         Verb1,
+        [Display(Description = "Description of Verb2")]
         Verb2
     }
     public enum EnumValues
