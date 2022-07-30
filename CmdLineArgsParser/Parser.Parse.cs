@@ -30,7 +30,7 @@ namespace CmdLineArgsParser
         /// <returns>An instance of <see cref="T"/></returns>
         public T Parse<T>(ParserSettings settings, string args, out List<ParserError> errors) where T : IOptions, new()
         {
-            List<string> splittedArgs = new List<string>();
+            var splitArgs = new List<string>();
             var match = Regex.Match(args, "(\"[^\"]+\"|[^\\s\"]+)");
             while (match.Success) {
                 var arg = match.Value;
@@ -39,11 +39,11 @@ namespace CmdLineArgsParser
                     arg = arg.Substring(0, arg.Length - 1);
                 }
 
-                splittedArgs.Add(arg);
+                splitArgs.Add(arg);
                 match = match.NextMatch();
             }
 
-            return Parse<T>(settings, splittedArgs.ToArray(), out errors);
+            return Parse<T>(settings, splitArgs.ToArray(), out errors);
         }
 
         /// <summary>
@@ -128,7 +128,19 @@ namespace CmdLineArgsParser
                 first = false;
             }
 
-            // Check required options
+            CheckRequiredOptions(properties, errors);
+
+            return res;
+        }
+
+        #region private operations
+        /// <summary>
+        /// Check for required options not set
+        /// </summary>
+        /// <param name="properties"></param>
+        /// <param name="errors"></param>
+        private void CheckRequiredOptions(OptionProperty[] properties, List<ParserError> errors)
+        {
             foreach (var p in properties.Where(p => p.Option.Required & !p.Set)) {
                 if (p.Option.Verb)
                     errors.Add(new ParserError(p.Option.Name, $"Required verb option not set"));
@@ -146,11 +158,8 @@ namespace CmdLineArgsParser
                     }
                 }
             }
-
-            return res;
         }
 
-        #region private operations
         /// <summary>
         /// Set a property value
         /// </summary>
@@ -169,10 +178,8 @@ namespace CmdLineArgsParser
                 return;
             }
 
-            if (option.Option.Verb) {
-                _verbOption = option;
+            if (option.Option.Verb)
                 _verbValue = value;
-            }
 
             if (option.Property.PropertyType.IsArray) {
                 // Array
