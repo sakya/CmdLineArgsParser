@@ -143,6 +143,21 @@ public class Errors : BaseTest
     }
 
     [Test]
+    public void RequiredOptionForVerbNotSet()
+    {
+        Parser.Parse<OptionsRequired>(
+            new ParserSettings(),
+            new []
+            {
+                "verb1",
+                "--forverb1",
+                "--requiredstring", "value"
+            },
+            out Errors);
+        CheckErrors(new [] { "Required option 'requiredforverb1' not set" });
+    }
+
+    [Test]
     public void OptionForVerb()
     {
         Parser.Parse<Options>(

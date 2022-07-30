@@ -114,12 +114,11 @@ namespace CmdLineArgsParser
             ValidateOptionsType<T>();
 
             var res = new T();
-            _verbOption = null;
-            _verbValue = null;
+             _verbValue = null;
             errors = new List<ParserError>();
 
             OptionProperty[] properties = GetProperties<T>();
-            OptionProperty verb = properties.FirstOrDefault(p => p.Option.Verb);
+            _verbOption = properties.FirstOrDefault(p => p.Option.Verb);
 
             OptionProperty lastOption = null;
             bool first = true;
@@ -161,8 +160,8 @@ namespace CmdLineArgsParser
                         SetOptionValue(lastOption, res, arg, errors);
                         lastOption = null;
                     } else {
-                        if (first && verb != null) {
-                            SetOptionValue(verb,  res,arg, errors);
+                        if (first && _verbOption != null) {
+                            SetOptionValue(_verbOption,  res,arg, errors);
                         } else {
                             errors.Add(new ParserError(null, $"Value without option: '{arg}'"));
                         }
@@ -173,12 +172,21 @@ namespace CmdLineArgsParser
             }
 
             // Check required options
-            foreach (var p in properties) {
-                if (p.Option.Required && !p.Set) {
-                    if (p.Option.Verb)
-                        errors.Add(new ParserError(p.Option.Name, $"Required verb option not set"));
-                    else
+            foreach (var p in properties.Where(p => p.Option.Required & !p.Set)) {
+                if (p.Option.Verb)
+                    errors.Add(new ParserError(p.Option.Name, $"Required verb option not set"));
+                else {
+                    if (p.Option.OnlyForVerbs?.Length > 0 && _verbOption != null) {
+                        foreach (var ofv in p.Option.GetOnlyForVerbs()) {
+                            var v = GetValueFromString(_verbOption.Property.PropertyType, ofv, out _);
+                            if (v.Equals(_verbValue)) {
+                                errors.Add(new ParserError(p.Option.Name, $"Required option '{p.Option.Name}' not set"));
+                                break;
+                            }
+                        }
+                    } else {
                         errors.Add(new ParserError(p.Option.Name, $"Required option '{p.Option.Name}' not set"));
+                    }
                 }
             }
 
@@ -566,6 +574,8 @@ namespace CmdLineArgsParser
                 }
             }
 
+            properties = properties.OrderBy(p => !p.Option.Verb)
+                .ToList();
             return properties.ToArray();
         }
 
