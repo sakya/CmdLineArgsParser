@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <PackageId>CmdLineArgsParser</PackageId>
+    <Authors>Paolo Iommarini</Authors>
+    <Copyright>Copyright © 2022, Paolo Iommarini</Copyright>
+    <PackageProjectUrl>https://github.com/sakya/CmdLineArgsParser</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sakya/CmdLineArgsParser</RepositoryUrl>
+    <RespositoryType>git</RespositoryType>
+    <PackageTags>command line commandline argument option shell parser</PackageTags>
+    <Description>CmdLineArgsParser helps you parse command line arguments.</Description>
+    <Version>0.1.0.0</Version>
+  </PropertyGroup>
+</Project>
