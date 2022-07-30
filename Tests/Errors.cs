@@ -17,6 +17,15 @@ public class Errors : BaseTest
             new ParserSettings(),
             new []
             {
+                "testvalue",
+            },
+            out Errors);
+        CheckErrors(new [] { "Value without option: 'testvalue'" });
+
+        Parser.Parse<Options>(
+            new ParserSettings(),
+            new []
+            {
                 "--invalid",
             },
             out Errors);

@@ -136,7 +136,7 @@ namespace CmdLineArgsParser
                     if (lastOption != null) {
                         SetOptionValue(lastOption, res, arg, errors);
                     } else {
-                        // TODO: Value without option
+                        errors.Add(new ParserError(null, $"Value without option: '{arg}'"));
                     }
                 }
             }
@@ -300,9 +300,7 @@ namespace CmdLineArgsParser
                 bool valueOk = false;
                 foreach (var vvs in option.Option.GetValidValues()) {
                     var vv = GetValueFromString(option.Property.PropertyType, vvs, out _);
-                    if (vv == null) {
-                        // TODO: invalid value in valid values list
-                    } else if (value.Equals(vv)) {
+                    if (value.Equals(vv)) {
                         valueOk = true;
                         break;
                     }
