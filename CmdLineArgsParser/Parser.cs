@@ -370,24 +370,28 @@ namespace CmdLineArgsParser
                         return Enum.Parse(propertyType, enumValue);
                     }
                 }
+                return null;
             }
 
             if (propertyType == typeof(int)) {
                 expectedType = "int";
                 if (int.TryParse(value, out int intValue))
                     return intValue;
+                return null;
             }
 
             if (propertyType == typeof(double)) {
                 expectedType = "double";
                 if (double.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out double doubleValue))
                     return doubleValue;
+                return null;
             }
 
             if (propertyType == typeof(float)) {
                 expectedType = "float";
                 if (float.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float floatValue))
                     return floatValue;
+                return null;
             }
             return null;
         }
