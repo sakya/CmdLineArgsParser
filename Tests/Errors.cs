@@ -23,7 +23,6 @@ public class Errors : BaseTest
         CheckErrors(new[] { "Invalid value for verb option: testVerb" });
     }
 
-
     [Test]
     public void InvalidOption()
     {

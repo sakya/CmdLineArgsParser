@@ -58,9 +58,3 @@ public class Options : IOptions
     [Option("forverb1", OnlyForVerbs = "Verb1;Verb3")]
     public bool? OptionForVerb1 { get; set; }
 }
-
-public class OptionsRequired : Options
-{
-    [Option("requiredstring", ShortName = 'r', Required = true)]
-    public string? RequiredString { get; set; }
-}

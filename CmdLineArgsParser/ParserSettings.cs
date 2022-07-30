@@ -5,6 +5,5 @@ namespace CmdLineArgsParser
     /// </summary>
     public class ParserSettings
     {
-
     }
 }

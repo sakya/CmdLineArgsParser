@@ -249,7 +249,6 @@ namespace CmdLineArgsParser
                                         Console.Write($"{new string(' ', columnsForName)}{line}");
                                     }
                                 }
-
                             }
                             Console.WriteLine();
                         }

@@ -43,7 +43,6 @@ public abstract class BaseTest
                 if (!list[i].Equals(valueList[i]))
                     Assert.Fail($"Property {propertyName} expected value was {value}, got {objValue}");
             }
-
         } else {
             if (!value.Equals(objValue)) {
                 Assert.Fail($"Property {propertyName} expected value was {value}, got {objValue}");

@@ -22,6 +22,5 @@ public class FromString : BaseTest
         CheckPropertyValue("Boolean2", res, true);
         CheckPropertyValue("StringArray", res, new [] { "test1", "string with spaces" });
         CheckPropertyValue("StringWithValues", res, "First");
-
     }
 }
