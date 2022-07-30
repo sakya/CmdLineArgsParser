@@ -97,8 +97,10 @@ namespace CmdLineArgsParser
             var res = new T();
             errors = new List<ParserError>();
             OptionProperty[] properties = GetProperties<T>();
+            OptionProperty verb = properties.FirstOrDefault(p => p.Option.Verb);
 
             OptionProperty lastOption = null;
+            bool first = true;
             foreach (var arg in args) {
                 if (arg.StartsWith("--")) {
                     // Argument name
@@ -135,10 +137,17 @@ namespace CmdLineArgsParser
                 } else {
                     if (lastOption != null) {
                         SetOptionValue(lastOption, res, arg, errors);
+                        lastOption = null;
                     } else {
-                        errors.Add(new ParserError(null, $"Value without option: '{arg}'"));
+                        if (first && verb != null) {
+                            SetOptionValue(verb,  res,arg, errors);
+                        } else {
+                            errors.Add(new ParserError(null, $"Value without option: '{arg}'"));
+                        }
                     }
                 }
+
+                first = false;
             }
 
             // Check required options
@@ -215,12 +224,19 @@ namespace CmdLineArgsParser
             if (properties.Length == 0)
                 throw new Exception("No public option properties defined");
 
+            bool verbFound = false;
             foreach (var property in properties) {
                 var opt = property.Option;
                 if (!property.Property.CanWrite)
                     throw new Exception($"Readonly property '{property.Property.Name}'");
 
-                if (string.IsNullOrEmpty(opt.Name))
+                if (opt.Verb) {
+                    if (verbFound)
+                        throw new Exception("Only one option can be defined as verb");
+                    verbFound = true;
+                }
+
+                if (string.IsNullOrEmpty(opt.Name) && !opt.Verb)
                     throw new Exception($"Empty option name for property '{property.Property.Name}'");
                 if (opt.Name.Contains(" "))
                     throw new Exception($"Invalid option name '{opt.Name}'");
@@ -259,7 +275,10 @@ namespace CmdLineArgsParser
         {
             object value = GetValueFromString(option.Property.PropertyType, stringValue, out var expectedType);
             if (value == null) {
-                errors.Add(new ParserError(option.Option.Name, $"Invalid value for option '{option.Option.Name}' (expected {expectedType}): {stringValue}"));
+                if (option.Option.Verb)
+                    errors.Add(new ParserError(option.Option.Name, $"Invalid value for verb option (expected {expectedType}): {stringValue}"));
+                else
+                    errors.Add(new ParserError(option.Option.Name, $"Invalid value for option '{option.Option.Name}' (expected {expectedType}): {stringValue}"));
                 return;
             }
 
@@ -345,8 +364,12 @@ namespace CmdLineArgsParser
 
             if (propertyType?.IsEnum == true) {
                 expectedType = propertyType.Name;
-                if (Enum.IsDefined(propertyType, value))
-                    return Enum.Parse(propertyType, value);
+                var enumValues = Enum.GetNames(propertyType);
+                foreach (var enumValue in enumValues) {
+                    if (string.Compare(enumValue, value, StringComparison.InvariantCultureIgnoreCase) == 0) {
+                        return Enum.Parse(propertyType, enumValue);
+                    }
+                }
             }
 
             if (propertyType == typeof(int)) {

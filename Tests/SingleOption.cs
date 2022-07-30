@@ -184,7 +184,6 @@ public class SingleOption : BaseTest
         Assert.Pass();
     }
 
-
     [Test]
     public void Enum()
     {
@@ -207,4 +206,16 @@ public class SingleOption : BaseTest
         CheckPropertyValue("Enum", res, Options.EnumValues.Two);
     }
 
+    [Test]
+    public void Verb()
+    {
+        var res = Parser.Parse<Options>(
+            new ParserSettings(),
+            new[]
+            {
+                "verb1"
+            },
+            out Errors);
+        CheckPropertyValue("Verb", res, Options.Verbs.Verb1);
+    }
 }

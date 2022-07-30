@@ -4,6 +4,7 @@ CmdLineArgsParser helps you parse command line arguments.
 Define a class containing the options you want to parse and then call the `Parse` method.
 
 When defining the options you can specify:
+- **Verb**: boolean indicating it the option is a verb. You can only have one option set as verb and must be passed as the first argument.
 - **Name (required)**: the long name of the option (e.g. `--option`)
 - **ShortName**: the short name of the option (e.g. `-o`)
 - **Required**: boolean indicating if the option is required

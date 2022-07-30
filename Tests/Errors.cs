@@ -17,6 +17,7 @@ public class Errors : BaseTest
             new ParserSettings(),
             new []
             {
+                "--int", "5",
                 "testvalue",
             },
             out Errors);

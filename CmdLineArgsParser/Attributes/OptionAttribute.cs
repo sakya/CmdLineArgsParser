@@ -36,6 +36,12 @@ namespace CmdLineArgsParser.Attributes
         public bool Required { get; set; }
 
         /// <summary>
+        /// Define if this option is verb
+        /// </summary>
+        /// <remarks>You can have only one verb option and it must appear as the first option in the arguments</remarks>
+        public bool Verb { get; set; }
+
+        /// <summary>
         /// The option valid values, separated by a semicolon
         /// </summary>
         public string ValidValues { get; set; }

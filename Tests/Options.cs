@@ -8,12 +8,20 @@ namespace Tests;
 
 public class Options : IOptions
 {
+    public enum Verbs
+    {
+        Verb1,
+        Verb2
+    }
     public enum EnumValues
     {
         One,
         Two,
         Three
     }
+
+    [Option("", Verb = true)]
+    public Verbs? Verb { get; set; }
 
     [Option("boolean", ShortName = 'b')]
     public bool? Boolean1 { get; set; }
@@ -22,7 +30,6 @@ public class Options : IOptions
 
     [Option("string", ShortName = 's')]
     public string? String { get; set; }
-
     [Option("string2")]
     public string? String2 { get; set; }
 
@@ -37,7 +44,6 @@ public class Options : IOptions
 
     [Option("stringarray", ShortName = 'a')]
     public string[]? StringArray { get; set; }
-
     [Option("stringlist", ShortName = 'l')]
     public List<string>? StringList { get; set; }
 
