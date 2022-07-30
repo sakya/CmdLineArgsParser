@@ -15,7 +15,7 @@ public class Options : IOptions
         Delete,
     }
 
-    [Option("",
+    [Option("action",
         Description = "The command to execute on the file",
         Verb = true, Required = true)]
     public Verbs Command { get; set; }

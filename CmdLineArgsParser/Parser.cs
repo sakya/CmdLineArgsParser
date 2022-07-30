@@ -195,8 +195,13 @@ namespace CmdLineArgsParser
             // Usage line
             Console.WriteLine("Usage:");
             var usage = $"{Path.GetFileName(Assembly.GetCallingAssembly().Location)}";
-            if (verb != null)
-                usage = $"{usage} {(verb.Option.Required ? "VERB" : "[VERB]")}";
+            if (verb != null) {
+                if (string.IsNullOrEmpty(verb.Option.Name))
+                    usage = $"{usage} {(verb.Option.Required ? "VERB" : "[VERB]")}";
+                else
+                    usage = $"{usage} {(verb.Option.Required ? verb.Option.Name : $"[{ verb.Option.Name }]")}";
+            }
+
             foreach (var req in properties.Where(p => !p.Option.Verb && p.Option.Required).OrderBy(p => p.Option.Name)) {
                 usage = $"{usage} --{req.Option.Name} VALUE";
             }
@@ -208,7 +213,7 @@ namespace CmdLineArgsParser
             // Options
             // Verb first
             if (verb != null && verb.HasValuesList) {
-                Console.WriteLine("Verb:");
+                Console.WriteLine(string.IsNullOrEmpty(verb.Option.Name) ? "Verb:" : $"{verb.Option.Name.Capitalize()}:");
                 if (verb.Option.ValidValues?.Length > 0) {
                     foreach (var v in verb.Option.ValidValues) {
                         Console.WriteLine($"  {v}");
