@@ -32,9 +32,9 @@ The `ShowUsage` method prints to the console the options and the help text
 Example output:
 ```
 Usage:
-Demo.exe VERB --input VALUE --output VALUE [OPTIONS]
+Demo.dll action --input VALUE --output VALUE [OPTIONS]
 
-Verb:
+Action:
   Backup                      Description of backup verb
   Copy                        Description of copy verb
   Delete                      Description of delete verb
