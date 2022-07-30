@@ -7,7 +7,7 @@ When defining the options you can specify:
 - **Name (required)**: the long name of the option (e.g. `--option`)
 - **ShortName**: the short name of the option (e.g. `-o`)
 - **Verb**: boolean indicating it the option is a verb. You can only have one option set as verb and must be passed as the first argument.
-- **OnlyForVerbs**: a list of verbs tihs option is valid for separated by a semicolon 
+- **OnlyForVerbs**: a list of verbs this option is valid for separated by a semicolon 
 - **Required**: boolean indicating if the option is required
 - **ValidValues**: a list of valid values separated by a semicolon (e.g. "value1;value2")
 - **Description**: the description of the option
