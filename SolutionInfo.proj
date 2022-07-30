@@ -4,6 +4,8 @@
     <Authors>Paolo Iommarini</Authors>
     <Copyright>Copyright © 2022, Paolo Iommarini</Copyright>
     <PackageProjectUrl>https://github.com/sakya/CmdLineArgsParser</PackageProjectUrl>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/sakya/CmdLineArgsParser</RepositoryUrl>
     <RespositoryType>git</RespositoryType>
     <PackageTags>command line commandline argument option shell parser</PackageTags>
