@@ -52,10 +52,20 @@ Options class:
 ```csharp
 public class Options : IOptions
 {
-    [Option("command", ShortName = 'c',
+    public enum Verbs
+    {
+        [Description("Description of backup verb")]
+        Backup,
+        [Description("Description of copy verb")]
+        Copy,
+        [Description("Description of delete verb")]
+        Delete,
+    }
+
+    [Option("action",
         Description = "The command to execute on the file",
-        Required = true, ValidValues = "copy;delete;backup")]
-    public string? Command { get; set; }
+        Verb = true, Required = true)]
+    public Verbs Command { get; set; }
 
     [Option("input", ShortName = 'i',
         Description = "The input file full path",
@@ -68,7 +78,7 @@ public class Options : IOptions
     public string? OutputFile { get; set; }
 
     [Option("retry", ShortName = 'r',
-        Description = "The number of time the command is retried in case of error, The number of time the command is retried in case of error, The number of time the command is retried in case of error, The number of time the command is retried in case of error")]
+        Description = "The number of time the command is retried in case of error")]
     public int? Retry { get; set; }
 
     [Option("yes", ShortName = 'y',
@@ -76,6 +86,7 @@ public class Options : IOptions
     public bool AlwaysYes { get; set; }
 
     [Option("overwrite", ShortName = 'w',
+        OnlyForVerbs = "Copy;Backup",
         Description = "Overwrite output without warning")]
     public bool OverwriteOutput { get; set; }
 }
@@ -83,9 +94,9 @@ public class Options : IOptions
 
 Usage example:
 ```csharp
-string[] testArgs = new string[]
+string[] testArgs =
 {
-    "--command", "backup",
+    "backup",
     "--input", "/home/user/file",
     "-yw",
     "-r", "5"
@@ -108,7 +119,7 @@ Required option 'output' not set
 The returned `options` object
 ```json
 {
-  "Command": "backup",
+  "Command": 0,
   "InputFile": "/home/user/file",
   "OutputFile": null,
   "Retry": 5,
