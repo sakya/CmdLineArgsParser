@@ -7,7 +7,7 @@ namespace CmdLineArgsParser
             OptionName = optionName;
             Message = message;
         }
-        
+
         public string OptionName { get; set; }
         public string Message { get; set; }
     }

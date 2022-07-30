@@ -182,39 +182,59 @@ namespace CmdLineArgsParser
                 _verbValue = value;
 
             if (option.Property.PropertyType.IsArray) {
-                // Array
-                Array array = option.Property.GetValue(obj) as Array;
-                if (array == null) {
-                    array = Array.CreateInstance(option.Property.PropertyType.GetElementType(), 1);
-                } else {
-                    Type elementType = array.GetType().GetElementType();
-                    if (elementType != null) {
-                        Array newArray = Array.CreateInstance(elementType, array.Length + 1);
-                        Array.Copy(array, newArray, Math.Min(array.Length, newArray.Length));
-                        array = newArray;
-                    }
-                }
-
-                array.SetValue(value, array.Length - 1);
-                option.Property.SetValue(obj, array);
+                SetArrayOptionValue(option, obj, value, errors);
             } else if (option.Property.PropertyType.IsGenericType && typeof(List<>).IsAssignableFrom(option.Property.PropertyType.GetGenericTypeDefinition())) {
-                // List
-                IList list = option.Property.GetValue(obj) as IList;
-                if (list == null) {
-                    Type genericListType = typeof(List<>).MakeGenericType(option.Property.PropertyType.GetGenericArguments().FirstOrDefault());
-                    list = (IList)Activator.CreateInstance(genericListType);
-                    option.Property.SetValue(obj, list);
-                }
-
-                list.Add(value);
+                SetListOptionValue(option, obj, value, errors);
             } else {
-                // Simple value
-                if (option.Set)
-                    errors.Add(new ParserError(option.Option.Name, $"Option '{option.Option.Name}' set multiple times"));
-                else
-                    option.Property.SetValue(obj, value);
+                SetSimpleOptionValue(option, obj, value, errors);
             }
 
+            CheckValidValues(option, obj, value, errors);
+            CheckOnlyForVerbs(option, obj, value, errors);
+
+            option.Set = true;
+        }
+
+        private void SetArrayOptionValue(OptionProperty option, object obj, object value, List<ParserError> errors)
+        {
+            Array array = option.Property.GetValue(obj) as Array;
+            if (array == null) {
+                array = Array.CreateInstance(option.Property.PropertyType.GetElementType(), 1);
+            } else {
+                Type elementType = array.GetType().GetElementType();
+                if (elementType != null) {
+                    Array newArray = Array.CreateInstance(elementType, array.Length + 1);
+                    Array.Copy(array, newArray, Math.Min(array.Length, newArray.Length));
+                    array = newArray;
+                }
+            }
+
+            array.SetValue(value, array.Length - 1);
+            option.Property.SetValue(obj, array);
+        }
+
+        private void SetListOptionValue(OptionProperty option, object obj, object value, List<ParserError> errors)
+        {
+            IList list = option.Property.GetValue(obj) as IList;
+            if (list == null) {
+                Type genericListType = typeof(List<>).MakeGenericType(option.Property.PropertyType.GetGenericArguments().FirstOrDefault());
+                list = (IList)Activator.CreateInstance(genericListType);
+                option.Property.SetValue(obj, list);
+            }
+
+            list.Add(value);
+        }
+
+        private void SetSimpleOptionValue(OptionProperty option, object obj, object value, List<ParserError> errors)
+        {
+            if (option.Set)
+                errors.Add(new ParserError(option.Option.Name, $"Option '{option.Option.Name}' set multiple times"));
+            else
+                option.Property.SetValue(obj, value);
+        }
+
+        private void CheckValidValues(OptionProperty option, object obj, object value, List<ParserError> errors)
+        {
             // Check valid values:
             if (option.Option.ValidValues?.Length > 0) {
                 bool valueOk = false;
@@ -228,11 +248,13 @@ namespace CmdLineArgsParser
 
                 if (!valueOk) {
                     option.Property.SetValue(obj, GetDefaultValue(option.Property.PropertyType));
-                    errors.Add(new ParserError(option.Option.Name, $"Invalid value for option '{option.Option.Name}': {stringValue}"));
+                    errors.Add(new ParserError(option.Option.Name, $"Invalid value for option '{option.Option.Name}': {value}"));
                 }
             }
+        }
 
-            // Check OnlyForVerbs
+        private void CheckOnlyForVerbs(OptionProperty option, object obj, object value, List<ParserError> errors)
+        {
             if (option.Option.OnlyForVerbs?.Length > 0) {
                 if (_verbValue == null) {
                     errors.Add(new ParserError(option.Option.Name, $"Option '{ option.Option.Name }' can be set only for specific verbs but no verb has been specified"));
@@ -252,8 +274,8 @@ namespace CmdLineArgsParser
                     }
                 }
             }
-            option.Set = true;
         }
+
         #endregion
     }
 }

@@ -20,8 +20,8 @@ public abstract class BaseTest
 
         var objValue = property?.GetValue(res);
         if (property?.PropertyType.IsArray == true) {
-            Array array = objValue as Array;
-            Array valueArray = value as Array;
+            Array? array = objValue as Array;
+            Array? valueArray = value as Array;
             if (valueArray == null)
                 Assert.Fail($"Wrong value for comparison (not an array)");
 
@@ -31,9 +31,9 @@ public abstract class BaseTest
                 if (!array.GetValue(i).Equals(valueArray.GetValue(i)))
                     Assert.Fail($"Property {propertyName} expected value was {value}, got {objValue}");
             }
-        } else if (property.PropertyType.IsGenericType && typeof(List<>).IsAssignableFrom(property.PropertyType.GetGenericTypeDefinition())) {
-            IList list = objValue as IList;
-            IList valueList = value as IList;
+        } else if (property?.PropertyType.IsGenericType == true && typeof(List<>).IsAssignableFrom(property.PropertyType.GetGenericTypeDefinition())) {
+            IList? list = objValue as IList;
+            IList? valueList = value as IList;
             if (valueList == null)
                 Assert.Fail($"Wrong value for comparison (not an array)");
 
