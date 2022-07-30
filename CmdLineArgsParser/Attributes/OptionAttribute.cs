@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using CmdLineArgsParser.Interfaces;
 
 namespace CmdLineArgsParser.Attributes
 {
-    public class OptionAttribute : System.Attribute
+    public class OptionAttribute : System.Attribute, IDescription
     {
         public OptionAttribute(string name)
         {
@@ -42,6 +43,11 @@ namespace CmdLineArgsParser.Attributes
         public bool Verb { get; set; }
 
         /// <summary>
+        /// Set this option valid only for verbs (separated by a semicolon).
+        /// </summary>
+        public string OnlyForVerbs { get; set; }
+
+        /// <summary>
         /// The option valid values, separated by a semicolon
         /// </summary>
         public string ValidValues { get; set; }
@@ -50,6 +56,13 @@ namespace CmdLineArgsParser.Attributes
         {
             if (!string.IsNullOrEmpty(ValidValues))
                 return ValidValues.Split(';');
+            return null;
+        }
+
+        public string[] GetOnlyForVerbs()
+        {
+            if (!string.IsNullOrEmpty(OnlyForVerbs))
+                return OnlyForVerbs.Split(';');
             return null;
         }
     }

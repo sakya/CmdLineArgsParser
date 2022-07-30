@@ -39,6 +39,7 @@ public class Options : IOptions
     public bool AlwaysYes { get; set; }
 
     [Option("overwrite", ShortName = 'w',
+        OnlyForVerbs = "Copy;Backup",
         Description = "Overwrite output without warning")]
     public bool OverwriteOutput { get; set; }
 }

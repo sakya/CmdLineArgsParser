@@ -14,7 +14,9 @@ public class Options : IOptions
         [Display(Description = "Description of Verb1")]
         Verb1,
         [Display(Description = "Description of Verb2")]
-        Verb2
+        Verb2,
+        [Display(Description = "Description of Verb3")]
+        Verb3
     }
     public enum EnumValues
     {
@@ -52,6 +54,9 @@ public class Options : IOptions
 
     [Option("enum", ShortName = 'e')]
     public EnumValues? Enum { get; set; }
+
+    [Option("forverb1", OnlyForVerbs = "Verb1;Verb3")]
+    public bool? OptionForVerb1 { get; set; }
 }
 
 public class OptionsRequired : Options

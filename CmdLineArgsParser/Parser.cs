@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -46,6 +47,9 @@ namespace CmdLineArgsParser
             }
         }
         #endregion
+
+        private OptionProperty _verbOption = null;
+        private object _verbValue = null;
 
         /// <summary>
         /// Parse <see cref="args"/> using the default <see cref="ParserSettings"/>
@@ -110,7 +114,10 @@ namespace CmdLineArgsParser
             ValidateOptionsType<T>();
 
             var res = new T();
+            _verbOption = null;
+            _verbValue = null;
             errors = new List<ParserError>();
+
             OptionProperty[] properties = GetProperties<T>();
             OptionProperty verb = properties.FirstOrDefault(p => p.Option.Verb);
 
@@ -219,9 +226,7 @@ namespace CmdLineArgsParser
                         Console.WriteLine($"  {v}");
                     }
                 } else {
-                    var propertyType = verb.Property.PropertyType;
-                    if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                        propertyType = propertyType.GetGenericArguments().FirstOrDefault();
+                    var propertyType = GetOptionBaseType(verb.Property.PropertyType);
                     if (propertyType != null) {
                         var enumValues = Enum.GetNames(propertyType);
                         foreach (var v in enumValues) {
@@ -309,16 +314,19 @@ namespace CmdLineArgsParser
             if (properties.Length == 0)
                 throw new Exception("No public option properties defined");
 
-            bool verbFound = false;
+            OptionProperty verb = null;
             foreach (var property in properties) {
                 var opt = property.Option;
                 if (!property.Property.CanWrite)
                     throw new Exception($"Readonly property '{property.Property.Name}'");
 
                 if (opt.Verb) {
-                    if (verbFound)
+                    if (verb != null)
                         throw new Exception("Only one option can be defined as verb");
-                    verbFound = true;
+
+                    if (GetOptionBaseType(property.Property.PropertyType) == typeof(bool))
+                        throw new Exception("Verb option cannot be a bool");
+                    verb = property;
                 }
 
                 if (string.IsNullOrEmpty(opt.Name) && !opt.Verb)
@@ -339,12 +347,31 @@ namespace CmdLineArgsParser
                 }
 
                 var validValues = opt.GetValidValues();
+                var onlyForVerbs = opt.GetOnlyForVerbs();
+                if (validValues?.Length > 0 && onlyForVerbs?.Length > 0) {
+                    throw new Exception($"Cannot set both ValidValues and OnlyForVerbs for option '{opt.Name}'");
+                }
+
+                // Check valid values
                 if (validValues?.Length > 0) {
-                    // Check valid values
                     foreach (var validValue in validValues) {
                         var v = GetValueFromString(property.Property.PropertyType, validValue, out _);
                         if (v == null)
                             throw new Exception($"Invalid value for option '{opt.Name}': {validValue}");
+                    }
+                }
+
+                // Check OnlyForVerbs
+                if (onlyForVerbs?.Length > 0) {
+                    if (opt.Verb)
+                        throw new Exception($"Verb option cannot have OnlyForVerbs set");
+                    if (verb == null)
+                        throw new Exception($"OnlyForVerbs set for option '{ opt.Name }' but no verb defined");
+
+                    foreach (var ofv in onlyForVerbs) {
+                        var v = GetValueFromString(verb.Property.PropertyType, ofv, out _);
+                        if (v == null)
+                            throw new Exception($"Invalid OnlyForVerbs for option '{opt.Name}': {ofv}");
                     }
                 }
 
@@ -370,6 +397,11 @@ namespace CmdLineArgsParser
                 else
                     errors.Add(new ParserError(option.Option.Name, $"Invalid value for option '{option.Option.Name}' (expected {expectedType}): {stringValue}"));
                 return;
+            }
+
+            if (option.Option.Verb) {
+                _verbOption = option;
+                _verbValue = value;
             }
 
             if (option.Property.PropertyType.IsArray) {
@@ -422,6 +454,27 @@ namespace CmdLineArgsParser
                     errors.Add(new ParserError(option.Option.Name, $"Invalid value for option '{option.Option.Name}': {stringValue}"));
                 }
             }
+
+            // Check OnlyForVerbs
+            if (option.Option.OnlyForVerbs?.Length > 0) {
+                if (_verbValue == null) {
+                    errors.Add(new ParserError(option.Option.Name, $"Option '{ option.Option.Name }' can be set only for specific verbs but no verb has been specified"));
+                } else {
+                    bool valueOk = false;
+                    foreach (var ofvs in option.Option.GetOnlyForVerbs()) {
+                        var ofv = GetValueFromString(_verbOption.Property.PropertyType, ofvs, out _);
+                        if (_verbValue.Equals(ofv)) {
+                            valueOk = true;
+                            break;
+                        }
+                    }
+
+                    if (!valueOk) {
+                        option.Property.SetValue(obj, GetDefaultValue(option.Property.PropertyType));
+                        errors.Add(new ParserError(option.Option.Name, $"Option '{option.Option.Name}' is not valid for verb { _verbValue }"));
+                    }
+                }
+            }
             option.Set = true;
         }
 
@@ -435,13 +488,7 @@ namespace CmdLineArgsParser
         private object GetValueFromString(Type propertyType, string value, out string expectedType)
         {
             expectedType = null;
-            if (propertyType.IsArray) {
-                propertyType = propertyType.GetElementType();
-            } else if (propertyType.IsGenericType && typeof(List<>).IsAssignableFrom(propertyType.GetGenericTypeDefinition())) {
-                propertyType = propertyType.GetGenericArguments().FirstOrDefault();
-            } else if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>)) {
-                propertyType = propertyType.GetGenericArguments().FirstOrDefault();
-            }
+            propertyType = GetOptionBaseType(propertyType);
 
             if (propertyType == typeof(string)) {
                 expectedType = "string";
@@ -521,6 +568,25 @@ namespace CmdLineArgsParser
             }
 
             return properties.ToArray();
+        }
+
+        /// <summary>
+        /// Get an option base type
+        /// </summary>
+        /// <param name="propertyType">The type of the option</param>
+        /// <returns></returns>
+        private Type GetOptionBaseType(Type propertyType)
+        {
+            if (propertyType.IsArray)
+                return propertyType.GetElementType();
+
+            if (propertyType.IsGenericType && typeof(List<>).IsAssignableFrom(propertyType.GetGenericTypeDefinition()))
+                return propertyType.GetGenericArguments().FirstOrDefault();
+
+            if (propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                return propertyType.GetGenericArguments().FirstOrDefault();
+
+            return propertyType;
         }
         #endregion
     }

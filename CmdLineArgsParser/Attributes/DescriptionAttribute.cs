@@ -1,6 +1,8 @@
+using CmdLineArgsParser.Interfaces;
+
 namespace CmdLineArgsParser.Attributes
 {
-    public class DescriptionAttribute : System.Attribute
+    public class DescriptionAttribute : System.Attribute, IDescription
     {
         public DescriptionAttribute(string description)
         {

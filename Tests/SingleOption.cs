@@ -218,4 +218,18 @@ public class SingleOption : BaseTest
             out Errors);
         CheckPropertyValue("Verb", res, Options.Verbs.Verb1);
     }
+
+    [Test]
+    public void OptionForVerb()
+    {
+        var res = Parser.Parse<Options>(
+            new ParserSettings(),
+            new[]
+            {
+                "verb1",
+                "--forverb1",
+            },
+            out Errors);
+        CheckPropertyValue("OptionForVerb1", res, true);
+    }
 }
