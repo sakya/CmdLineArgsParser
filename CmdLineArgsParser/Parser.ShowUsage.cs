@@ -25,7 +25,7 @@ namespace CmdLineArgsParser
             var properties = GetProperties<T>();
             var verb = properties.FirstOrDefault(p => p.Option.Verb);
 
-            ShowUsageLine(properties, verb);
+            ShowUsageLine(Path.GetFileName(Assembly.GetCallingAssembly().Location), properties, verb);
 
             // Options
             // Verb first
@@ -42,11 +42,12 @@ namespace CmdLineArgsParser
             }
         }
 
-        private void ShowUsageLine(OptionProperty[] properties, OptionProperty verb)
+        #region private operations
+        private void ShowUsageLine(string callingAssembly, OptionProperty[] properties, OptionProperty verb)
         {
             // Usage line
             Console.WriteLine("Usage:");
-            var usage = $"{Path.GetFileName(Assembly.GetCallingAssembly().Location)}";
+            var usage = $"{callingAssembly}";
             if (verb != null) {
                 if (string.IsNullOrEmpty(verb.Option.Name))
                     usage = $"{usage} {(verb.Option.Required ? "VERB" : "[VERB]")}";
@@ -169,5 +170,6 @@ namespace CmdLineArgsParser
 
             return res;
         }
+        #endregion
     }
 }

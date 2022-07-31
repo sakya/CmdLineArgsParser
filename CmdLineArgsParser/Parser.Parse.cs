@@ -106,7 +106,6 @@ namespace CmdLineArgsParser
         }
 
         #region private operations
-
         private OptionProperty ParseNameOption<T>(T obj, OptionProperty[] properties, string arg, List<ParserError> errors) where T : IOptions, new()
         {
             var optName = arg.Substring(2);
@@ -289,7 +288,6 @@ namespace CmdLineArgsParser
                 }
             }
         }
-
         #endregion
     }
 }
