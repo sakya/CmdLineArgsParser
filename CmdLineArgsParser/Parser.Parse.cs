@@ -301,7 +301,6 @@ namespace CmdLineArgsParser
         {
             var res = new List<string>();
             if (args?.Length > 0) {
-                bool isValue = false;
                 foreach (var arg in args) {
                     if (arg.StartsWith("-")) {
                         int idx = arg.IndexOf('=');
@@ -312,8 +311,6 @@ namespace CmdLineArgsParser
                         } else {
                             res.Add(arg);
                         }
-
-                        isValue = true;
                     } else {
                         res.Add(arg);
                     }
