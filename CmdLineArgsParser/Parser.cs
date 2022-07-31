@@ -76,7 +76,7 @@ namespace CmdLineArgsParser
 
                 if (string.IsNullOrEmpty(opt.Name) && !opt.Verb)
                     throw new Exception($"Empty option name for property '{property.Property.Name}'");
-                if (opt.Name.Contains(" "))
+                if (opt.Name.Contains(" ") || opt.Name.StartsWith("-"))
                     throw new Exception($"Invalid option name '{opt.Name}'");
 
                 if (names.Contains(opt.Name.ToLower())) {

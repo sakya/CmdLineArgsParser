@@ -81,37 +81,9 @@ namespace CmdLineArgsParser
             bool first = true;
             foreach (var arg in args) {
                 if (arg.StartsWith("--")) {
-                    // Argument name
-                    var optName = arg.Substring(2);
-                    lastOption = properties.FirstOrDefault(p =>
-                            string.Compare(p.Option.Name, optName, StringComparison.InvariantCultureIgnoreCase) == 0);
-
-                    if (lastOption == null) {
-                        errors.Add(new ParserError(null, $"Unknown option '{optName}'"));
-                    } else if (lastOption.Property.PropertyType.IsAssignableFrom(typeof(bool))) {
-                        SetOptionValue(lastOption,  res,"true", errors);
-                        lastOption = null;
-                    }
+                    lastOption = ParseNameOption(res, properties, arg, errors);
                 } else if (arg.StartsWith(("-"))) {
-                    // Short argument name(s)
-                    var optName = arg.Substring(1);
-                    foreach (char c in optName) {
-                        lastOption = properties.FirstOrDefault(p =>
-                            char.ToLower(p.Option.ShortName) == char.ToLower(c));
-                        if (lastOption == null) {
-                            errors.Add(new ParserError(null, $"Unknown option '{optName}'"));
-                        } else {
-                            if (optName.Length > 1) {
-                                if (!lastOption.Property.PropertyType.IsAssignableFrom(typeof(bool))) {
-                                    errors.Add(new ParserError(lastOption.Option.Name, $"Cannot set option '{lastOption.Option.Name}' with multiple switch (only boolean options supported)"));
-                                } else {
-                                    SetOptionValue(lastOption,  res,"true", errors);
-                                }
-                            } else if (lastOption.Property.PropertyType.IsAssignableFrom(typeof(bool))) {
-                                SetOptionValue(lastOption,  res,"true", errors);
-                            }
-                        }
-                    }
+                    lastOption = ParseShortNameOption(res, properties, arg, errors);
                 } else {
                     if (lastOption != null) {
                         SetOptionValue(lastOption, res, arg, errors);
@@ -134,6 +106,48 @@ namespace CmdLineArgsParser
         }
 
         #region private operations
+
+        private OptionProperty ParseNameOption<T>(T obj, OptionProperty[] properties, string arg, List<ParserError> errors)
+        {
+            var optName = arg.Substring(2);
+            var res = properties.FirstOrDefault(p =>
+                string.Compare(p.Option.Name, optName, StringComparison.InvariantCultureIgnoreCase) == 0);
+
+            if (res == null) {
+                errors.Add(new ParserError(null, $"Unknown option '{optName}'"));
+            } else if (res.Property.PropertyType.IsAssignableFrom(typeof(bool))) {
+                SetOptionValue(res,  obj,"true", errors);
+                res = null;
+            }
+
+            return res;
+        }
+
+        private OptionProperty ParseShortNameOption<T>(T obj, OptionProperty[] properties, string arg, List<ParserError> errors)
+        {
+            OptionProperty res = null;
+            var optName = arg.Substring(1);
+            foreach (char c in optName) {
+                res = properties.FirstOrDefault(p =>
+                    char.ToLower(p.Option.ShortName) == char.ToLower(c));
+                if (res == null) {
+                    errors.Add(new ParserError(null, $"Unknown option '{optName}'"));
+                } else {
+                    if (optName.Length > 1) {
+                        if (!res.Property.PropertyType.IsAssignableFrom(typeof(bool))) {
+                            errors.Add(new ParserError(res.Option.Name, $"Cannot set option '{res.Option.Name}' with multiple switch (only boolean options supported)"));
+                        } else {
+                            SetOptionValue(res,  obj,"true", errors);
+                        }
+                    } else if (res.Property.PropertyType.IsAssignableFrom(typeof(bool))) {
+                        SetOptionValue(res,  obj,"true", errors);
+                    }
+                }
+            }
+
+            return res;
+        }
+
         /// <summary>
         /// Check for required options not set
         /// </summary>
