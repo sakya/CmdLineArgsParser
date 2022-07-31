@@ -15,6 +15,14 @@ public class Options : IOptions
         Delete,
     }
 
+    public enum SomeEnumValues
+    {
+        EnumValue1,
+        EnumValue2,
+        EnumValue3,
+        EnumValue4,
+    }
+
     [Option("action",
         Description = "The command to execute on the file",
         Verb = true, Required = true)]
@@ -42,4 +50,13 @@ public class Options : IOptions
         OnlyForVerbs = "Copy;Backup",
         Description = "Overwrite output without warning")]
     public bool OverwriteOutput { get; set; }
+
+    [Option("withValues",
+        ValidValues = "value1;value2",
+        Description = "An option with a list of valid values")]
+    public string? WithValues { get; set; }
+
+    [Option("enum",
+        Description = "An option with enum values")]
+    public SomeEnumValues SomeEumValue { get; set; }
 }

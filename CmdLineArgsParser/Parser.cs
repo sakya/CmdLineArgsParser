@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using CmdLineArgsParser.Attributes;
+using CmdLineArgsParser.Helpers;
 
 namespace CmdLineArgsParser
 {
@@ -51,7 +52,6 @@ namespace CmdLineArgsParser
         /// </summary>
         private void ValidateOptionsType<T>() where T : IOptions, new()
         {
-            // Check names
             HashSet<string> names = new HashSet<string>();
             HashSet<char> shortNames = new HashSet<char>();
 
@@ -151,13 +151,7 @@ namespace CmdLineArgsParser
 
             if (propertyType?.IsEnum == true) {
                 expectedType = propertyType.Name;
-                var enumValues = Enum.GetNames(propertyType);
-                foreach (var enumValue in enumValues) {
-                    if (string.Compare(enumValue, value, StringComparison.InvariantCultureIgnoreCase) == 0) {
-                        return Enum.Parse(propertyType, enumValue);
-                    }
-                }
-                return null;
+                return EnumHelper.GetValue(propertyType, value);
             }
 
             if (propertyType == typeof(int)) {

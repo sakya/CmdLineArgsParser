@@ -1,10 +1,11 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using CmdLineArgsParser.Attributes;
 using CmdLineArgsParser.Extensions;
+using DescriptionAttribute = CmdLineArgsParser.Attributes.DescriptionAttribute;
 
 namespace CmdLineArgsParser
 {
@@ -24,6 +25,25 @@ namespace CmdLineArgsParser
             var properties = GetProperties<T>();
             var verb = properties.FirstOrDefault(p => p.Option.Verb);
 
+            ShowUsageLine(properties, verb);
+
+            // Options
+            // Verb first
+            if (verb != null && verb.HasValuesList) {
+                ShowVerbUsage(verb, columnsForName);
+            }
+
+            var sections = properties.GroupBy(p => p.Option.Section);
+            foreach (var section in sections) {
+                Console.WriteLine($"{ (string.IsNullOrEmpty(section.Key) ? "General" : section.Key) }:");
+                foreach (var property in section.Where(p => !p.Option.Verb).OrderBy(p => p.Option.Name)) {
+                    ShowOptionUsage(property, columnsForName);
+                }
+            }
+        }
+
+        private void ShowUsageLine(OptionProperty[] properties, OptionProperty verb)
+        {
             // Usage line
             Console.WriteLine("Usage:");
             var usage = $"{Path.GetFileName(Assembly.GetCallingAssembly().Location)}";
@@ -42,19 +62,6 @@ namespace CmdLineArgsParser
             Console.WriteLine(usage);
 
             Console.WriteLine();
-            // Options
-            // Verb first
-            if (verb != null && verb.HasValuesList) {
-                ShowVerbUsage(verb, columnsForName);
-            }
-
-            var sections = properties.GroupBy(p => p.Option.Section);
-            foreach (var section in sections) {
-                Console.WriteLine($"{ (string.IsNullOrEmpty(section.Key) ? "General" : section.Key) }:");
-                foreach (var property in section.Where(p => !p.Option.Verb).OrderBy(p => p.Option.Name)) {
-                    ShowOptionUsage(property, columnsForName);
-                }
-            }
         }
 
         private void ShowVerbUsage(OptionProperty verb, int columnsForName)
@@ -66,7 +73,7 @@ namespace CmdLineArgsParser
                 }
             } else {
                 var propertyType = GetOptionBaseType(verb.Property.PropertyType);
-                if (propertyType != null) {
+                if (propertyType != null && propertyType.IsEnum) {
                     var enumValues = Enum.GetNames(propertyType);
                     foreach (var v in enumValues) {
                         Console.Write($"  {v}{ new string(' ', columnsForName - v.Length - 2) }");
@@ -117,8 +124,13 @@ namespace CmdLineArgsParser
                 sb.Append(new string(' ', columnsForName));
             }
 
-            if (!string.IsNullOrEmpty(opt.Description)) {
-                var wrappedText = opt.Description.WordWrap(Console.WindowWidth - columnsForName).TrimEnd();
+            var description = opt.Description?.Trim();
+            var validValues = GetShowValidValues(property);
+            if (!string.IsNullOrEmpty(validValues))
+                description = $"{description}{ (string.IsNullOrEmpty(description) ? string.Empty : Environment.NewLine) }{validValues}";
+
+            if (!string.IsNullOrEmpty(description)) {
+                var wrappedText = description.WordWrap(Console.WindowWidth - columnsForName).TrimEnd();
                 var lines = wrappedText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
                 for (int i = 0; i < lines.Length; i++) {
                     var line = lines[i];
@@ -130,6 +142,32 @@ namespace CmdLineArgsParser
             }
 
             Console.WriteLine(sb.ToString());
+        }
+
+        private string GetShowValidValues(OptionProperty property)
+        {
+            string res = null;
+
+            var propertyType = GetOptionBaseType(property.Property.PropertyType);
+            var validValues = property.Option.GetValidValues();
+            if (validValues?.Length > 0) {
+                res = "Valid values:";
+                for (int i = 0; i < validValues.Length; i++) {
+                    if (i != 0)
+                        res = $"{res},";
+                    res = $"{res} {validValues[i]}";
+                }
+            } else if (propertyType.IsEnum) {
+                res = "Valid values:";
+                var enumValues = Enum.GetNames(propertyType);
+                for (int i = 0; i < enumValues.Length; i++) {
+                    if (i != 0)
+                        res = $"{res},";
+                    res = $"{res} {enumValues[i]}";
+                }
+            }
+
+            return res;
         }
     }
 }
