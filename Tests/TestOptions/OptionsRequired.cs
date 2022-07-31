@@ -1,6 +1,6 @@
 using CmdLineArgsParser.Attributes;
 
-namespace Tests;
+namespace Tests.TestOptions;
 
 public class OptionsRequired : Options
 {

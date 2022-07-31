@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.SymbolStore;
 using CmdLineArgsParser;
 using CmdLineArgsParser.Attributes;
-using Newtonsoft.Json;
 
-namespace Tests;
+namespace Tests.TestOptions;
 
 public class Options : IOptions
 {

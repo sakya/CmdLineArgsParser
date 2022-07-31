@@ -1,5 +1,6 @@
 using CmdLineArgsParser;
 using NUnit.Framework;
+using Tests.TestOptions;
 
 namespace Tests;
 
