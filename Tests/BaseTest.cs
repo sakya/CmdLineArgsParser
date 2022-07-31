@@ -38,14 +38,14 @@ public abstract class BaseTest
                 Assert.Fail($"Wrong value for comparison (not an array)");
 
             if (valueList?.Count != list?.Count)
-                Assert.Fail($"Property {propertyName} expected value was {value}, got {objValue}");
+                Assert.Fail($"Property {propertyName} expected value was '{value}', got '{objValue}'");
             for (int i = 0; i < list.Count; i++) {
                 if (!list[i].Equals(valueList[i]))
-                    Assert.Fail($"Property {propertyName} expected value was {value}, got {objValue}");
+                    Assert.Fail($"Property {propertyName} expected value was '{value}', got '{objValue}'");
             }
         } else {
             if (!value.Equals(objValue)) {
-                Assert.Fail($"Property {propertyName} expected value was {value}, got {objValue}");
+                Assert.Fail($"Property {propertyName} expected value was '{value}', got '{objValue}'");
             }
         }
     }

@@ -70,6 +70,9 @@ namespace CmdLineArgsParser
         {
             ValidateOptionsType<T>();
 
+            if (settings.EnableEqualSyntax)
+                args = ParseArgumentsForEqualSyntax(args);
+
             var res = new T();
              _verbValue = null;
             errors = new List<ParserError>();
@@ -287,6 +290,36 @@ namespace CmdLineArgsParser
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Parse arguments for alternative syntax "--name=value"
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        private string[] ParseArgumentsForEqualSyntax(string[] args)
+        {
+            var res = new List<string>();
+            if (args?.Length > 0) {
+                bool isValue = false;
+                foreach (var arg in args) {
+                    if (arg.StartsWith("-")) {
+                        int idx = arg.IndexOf('=');
+                        if (idx >= 0) {
+                            res.Add(arg.Substring(0, idx));
+                            if (arg.Length > idx + 1)
+                                res.Add(arg.Substring(idx + 1));
+                        } else {
+                            res.Add(arg);
+                        }
+
+                        isValue = true;
+                    } else {
+                        res.Add(arg);
+                    }
+                }
+            }
+            return res.ToArray();
         }
         #endregion
     }

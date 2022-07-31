@@ -4,7 +4,8 @@ namespace Tests;
 
 public class OptionsRequired : Options
 {
-    [Option("requiredstring", ShortName = 'r', Required = true)]
+    [Option("requiredstring", 'r',
+        Required = true)]
     public string? RequiredString { get; set; }
 
     [Option("requiredforverb1", Required = true, OnlyForVerbs = "Verb1")]

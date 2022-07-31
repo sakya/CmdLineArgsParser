@@ -25,34 +25,35 @@ public class Options : IOptions
         Three
     }
 
-    [Option("", Verb = true)]
+    [Option("action", Verb = true)]
     public Verbs? Verb { get; set; }
 
-    [Option("boolean", ShortName = 'b')]
+    [Option("boolean", 'b')]
     public bool? Boolean1 { get; set; }
-    [Option("boolean2", ShortName = 'c')]
+    [Option("boolean2", 'c')]
     public bool? Boolean2 { get; set; }
 
-    [Option("string", ShortName = 's')]
+    [Option("string", 's')]
     public string? String { get; set; }
     [Option("string2")]
     public string? String2 { get; set; }
 
-    [Option("stringwithvalues", ShortName = 'v', ValidValues = "First;Second")]
+    [Option("stringwithvalues", 'v',
+        ValidValues = "First;Second")]
     public string? StringWithValues { get; set; }
 
-    [Option("int", ShortName = 'i')]
+    [Option("int", 'i')]
     public int? IntNumber { get; set; }
 
-    [Option("double", ShortName = 'd')]
+    [Option("double", 'd')]
     public double? DoubleNumber { get; set; }
 
-    [Option("stringarray", ShortName = 'a')]
+    [Option("stringarray", 'a')]
     public string[]? StringArray { get; set; }
-    [Option("stringlist", ShortName = 'l')]
+    [Option("stringlist", 'l')]
     public List<string>? StringList { get; set; }
 
-    [Option("enum", ShortName = 'e')]
+    [Option("enum", 'e')]
     public EnumValues? Enum { get; set; }
 
     [Option("forverb1", OnlyForVerbs = "Verb1;Verb3")]

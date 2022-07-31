@@ -48,12 +48,8 @@ namespace CmdLineArgsParser
             // Usage line
             Console.WriteLine("Usage:");
             var usage = $"{callingAssembly}";
-            if (verb != null) {
-                if (string.IsNullOrEmpty(verb.Option.Name))
-                    usage = $"{usage} {(verb.Option.Required ? "VERB" : "[VERB]")}";
-                else
-                    usage = $"{usage} {(verb.Option.Required ? verb.Option.Name : $"[{ verb.Option.Name }]")}";
-            }
+            if (verb != null)
+                usage = $"{usage} {(verb.Option.Required ? verb.Option.Name : $"[{ verb.Option.Name }]")}";
 
             foreach (var req in properties.Where(p => !p.Option.Verb && p.Option.Required).OrderBy(p => p.Option.Name)) {
                 usage = $"{usage} --{req.Option.Name} VALUE";

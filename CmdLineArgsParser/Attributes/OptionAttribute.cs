@@ -11,6 +11,12 @@ namespace CmdLineArgsParser.Attributes
             Name = name;
         }
 
+        public OptionAttribute(string name, char shortName)
+        {
+            Name = name;
+            ShortName = shortName;
+        }
+
         /// <summary>
         /// Section name, used to show usage
         /// </summary>

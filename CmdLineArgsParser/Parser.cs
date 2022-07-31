@@ -65,6 +65,9 @@ namespace CmdLineArgsParser
                 if (!property.Property.CanWrite)
                     throw new Exception($"Readonly property '{property.Property.Name}'");
 
+                if (string.IsNullOrEmpty(property.Option.Name))
+                    throw new Exception($"Missing option name for property '{property.Property.Name}'");
+
                 if (opt.Verb) {
                     if (verb != null)
                         throw new Exception("Only one option can be defined as verb");

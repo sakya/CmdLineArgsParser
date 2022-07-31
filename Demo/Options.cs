@@ -28,25 +28,25 @@ public class Options : IOptions
         Verb = true, Required = true)]
     public Verbs Command { get; set; }
 
-    [Option("input", ShortName = 'i',
+    [Option("input", 'i',
         Description = "The input file full path",
         Required = true)]
     public string? InputFile { get; set; }
 
-    [Option("output", ShortName = 'o',
+    [Option("output", 'o',
         Description = "The output file full path",
         Required = true)]
     public string? OutputFile { get; set; }
 
-    [Option("retry", ShortName = 'r',
+    [Option("retry", 'r',
         Description = "The number of time the command is retried in case of error")]
     public int? Retry { get; set; }
 
-    [Option("yes", ShortName = 'y',
+    [Option("yes", 'y',
         Description = "Assume yes as a reply to all the questions")]
     public bool AlwaysYes { get; set; }
 
-    [Option("overwrite", ShortName = 'w',
+    [Option("overwrite", 'w',
         OnlyForVerbs = "Copy;Backup",
         Description = "Overwrite output without warning")]
     public bool OverwriteOutput { get; set; }
