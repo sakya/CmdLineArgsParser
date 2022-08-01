@@ -109,32 +109,39 @@ namespace CmdLineArgsParser
                     throw new Exception($"Cannot set both ValidValues and OnlyForVerbs for option '{opt.Name}'");
                 }
 
-                // Check valid values
-                if (validValues?.Length > 0) {
-                    foreach (var validValue in validValues) {
-                        var v = GetValueFromString(property.Property.PropertyType, validValue, out _);
-                        if (v == null)
-                            throw new Exception($"Invalid value for option '{opt.Name}': {validValue}");
-                    }
-                }
-
-                // Check OnlyForVerbs
-                if (onlyForVerbs?.Length > 0) {
-                    if (opt.Verb)
-                        throw new Exception($"Verb option cannot have OnlyForVerbs set");
-                    if (verb == null)
-                        throw new Exception($"OnlyForVerbs set for option '{ opt.Name }' but no verb defined");
-
-                    foreach (var ofv in onlyForVerbs) {
-                        var v = GetValueFromString(verb.Property.PropertyType, ofv, out _);
-                        if (v == null)
-                            throw new Exception($"Invalid OnlyForVerbs for option '{opt.Name}': {ofv}");
-                    }
-                }
+                ValidateValidValues(property, validValues);
+                ValidateOnlyForVerbs(property, verb, onlyForVerbs);
 
                 names.Add(opt.Name.ToLower());
                 if (opt.ShortName != '\0')
                     shortNames.Add(opt.ShortName);
+            }
+        }
+
+        private void ValidateValidValues(OptionProperty property, string[] validValues)
+        {
+            if (validValues?.Length > 0) {
+                foreach (var validValue in validValues) {
+                    var v = GetValueFromString(property.Property.PropertyType, validValue, out _);
+                    if (v == null)
+                        throw new Exception($"Invalid value for option '{property.Option.Name}': {validValue}");
+                }
+            }
+        }
+
+        private void ValidateOnlyForVerbs(OptionProperty property, OptionProperty verb, string[] onlyForVerbs)
+        {
+            if (onlyForVerbs?.Length > 0) {
+                if (property.Option.Verb)
+                    throw new Exception($"Verb option cannot have OnlyForVerbs set");
+                if (verb == null)
+                    throw new Exception($"OnlyForVerbs set for option '{ property.Option.Name }' but no verb defined");
+
+                foreach (var ofv in onlyForVerbs) {
+                    var v = GetValueFromString(verb.Property.PropertyType, ofv, out _);
+                    if (v == null)
+                        throw new Exception($"Invalid OnlyForVerbs for option '{property.Option.Name}': {ofv}");
+                }
             }
         }
 
