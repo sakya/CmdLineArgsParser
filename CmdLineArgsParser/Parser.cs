@@ -46,8 +46,10 @@ namespace CmdLineArgsParser
         private OptionProperty _verbOption = null;
         private object _verbValue = null;
 
-        public Parser(ParserSettings settings)
+        public Parser(ParserSettings settings = null)
         {
+            if (settings == null)
+                settings = new ParserSettings();
             Settings = settings;
         }
 
