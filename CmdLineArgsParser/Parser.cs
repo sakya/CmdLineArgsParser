@@ -46,6 +46,13 @@ namespace CmdLineArgsParser
         private OptionProperty _verbOption = null;
         private object _verbValue = null;
 
+        public Parser(ParserSettings settings)
+        {
+            Settings = settings;
+        }
+
+        public ParserSettings Settings { get; private set; }
+
         #region private operations
         /// <summary>
         /// Validate the options type
@@ -175,6 +182,18 @@ namespace CmdLineArgsParser
                 expectedType = "float";
                 if (float.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float floatValue))
                     return floatValue;
+                return null;
+            }
+
+            if (propertyType == typeof(DateTime)) {
+                expectedType = "DateTime";
+                if (!string.IsNullOrEmpty(Settings.DateTimeFormat)) {
+                    if (DateTime.TryParseExact(value, Settings.DateTimeFormat, null, DateTimeStyles.None, out var dtValue))
+                        return dtValue;
+                } else {
+                    if (DateTime.TryParse(value, out var dtValue))
+                        return dtValue;
+                }
                 return null;
             }
             return null;

@@ -15,9 +15,8 @@ namespace CmdLineArgsParser
         /// Writes options to the <see cref="Console"/>
         /// </summary>
         /// <param name="columnsForName">The number of columns to reserve for option names (default: 0)</param>
-        /// <param name="useEqualSyntax">If set to true the usage uses the equal syntax (e.g. --option=VALUE)</param>
         /// <typeparam name="T"></typeparam>
-        public void ShowUsage<T>(int columnsForName = 30, bool useEqualSyntax = true) where T : IOptions, new()
+        public void ShowUsage<T>(int columnsForName = 30) where T : IOptions, new()
         {
             if (columnsForName <= 0)
                 throw new ArgumentException($"{nameof(columnsForName)} must be greater than zero",
@@ -27,7 +26,7 @@ namespace CmdLineArgsParser
             var properties = GetProperties<T>();
             var verb = properties.FirstOrDefault(p => p.Option.Verb);
 
-            ShowUsageLine(Path.GetFileName(Assembly.GetCallingAssembly().Location), properties, verb, useEqualSyntax);
+            ShowUsageLine(Path.GetFileName(Assembly.GetCallingAssembly().Location), properties, verb);
 
             // Options
             // Verb first
@@ -39,13 +38,13 @@ namespace CmdLineArgsParser
             foreach (var section in sections) {
                 Console.WriteLine($"{ (string.IsNullOrEmpty(section.Key) ? "General" : section.Key) }:");
                 foreach (var property in section.Where(p => !p.Option.Verb).OrderBy(p => p.Option.Name)) {
-                    ShowOptionUsage(property, columnsForName, useEqualSyntax);
+                    ShowOptionUsage(property, columnsForName);
                 }
             }
         }
 
         #region private operations
-        private void ShowUsageLine(string callingAssembly, OptionProperty[] properties, OptionProperty verb, bool useEqualSyntax)
+        private void ShowUsageLine(string callingAssembly, OptionProperty[] properties, OptionProperty verb)
         {
             // Usage line
             Console.WriteLine("Usage:");
@@ -54,7 +53,7 @@ namespace CmdLineArgsParser
                 usage = $"{usage} {(verb.Option.Required ? verb.Option.Name : $"[{ verb.Option.Name }]")}";
 
             foreach (var req in properties.Where(p => !p.Option.Verb && p.Option.Required).OrderBy(p => p.Option.Name)) {
-                usage = $"{usage} --{req.Option.Name}{ (useEqualSyntax ? "=" : string.Empty) }VALUE";
+                usage = $"{usage} --{req.Option.Name}{ (Settings.EnableEqualSyntax ? "=" : string.Empty) }VALUE";
             }
             if (properties.Any(p => !p.Option.Verb && !p.Option.Required))
                 usage = $"{usage} [OPTIONS]";
@@ -103,7 +102,7 @@ namespace CmdLineArgsParser
             Console.WriteLine();
         }
 
-        private void ShowOptionUsage(OptionProperty property, int columnsForName, bool useEqualSyntax)
+        private void ShowOptionUsage(OptionProperty property, int columnsForName)
         {
             var opt = property.Option;
 
@@ -115,7 +114,7 @@ namespace CmdLineArgsParser
 
             sb.Append($"--{opt.Name}");
             if (property.Property.PropertyType != typeof(bool)) {
-                if (useEqualSyntax)
+                if (Settings.EnableEqualSyntax)
                     sb.Append("=");
                 sb.Append("VALUE");
             }

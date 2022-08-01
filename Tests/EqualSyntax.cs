@@ -16,7 +16,6 @@ public class EqualSyntax: BaseTest
     public void String()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new[]
             {
                 "--string=value"
@@ -25,7 +24,6 @@ public class EqualSyntax: BaseTest
         CheckPropertyValue("String", res, "value");
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new[]
             {
                 "--string=", "value"
@@ -34,7 +32,6 @@ public class EqualSyntax: BaseTest
         CheckPropertyValue("String", res, "value");
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new[]
             {
                 "--string=value=test"
@@ -47,7 +44,6 @@ public class EqualSyntax: BaseTest
     public void StringList()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-l=test1",
@@ -57,7 +53,6 @@ public class EqualSyntax: BaseTest
         CheckPropertyValue("StringList", res, new List<string>() { "test1", "test2" });
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--stringlist=test1",
@@ -73,7 +68,6 @@ public class EqualSyntax: BaseTest
     public void Int()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-i=5"
@@ -82,7 +76,6 @@ public class EqualSyntax: BaseTest
         CheckPropertyValue("IntNumber", res, 5);
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--int=5"
@@ -97,7 +90,6 @@ public class EqualSyntax: BaseTest
     public void Enum()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-e=One",
@@ -106,7 +98,6 @@ public class EqualSyntax: BaseTest
         CheckPropertyValue("Enum", res, Options.EnumValues.One);
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--enum=Two",
