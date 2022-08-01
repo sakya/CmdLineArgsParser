@@ -74,8 +74,7 @@ namespace CmdLineArgsParser
                 if (!property.Property.CanWrite)
                     throw new Exception($"Readonly property '{property.Property.Name}'");
 
-                if (string.IsNullOrEmpty(property.Option.Name))
-                    throw new Exception($"Missing option name for property '{property.Property.Name}'");
+                ValidateName(property, names, shortNames);
 
                 if (opt.Verb) {
                     if (verb != null)
@@ -84,18 +83,6 @@ namespace CmdLineArgsParser
                     if (GetOptionBaseType(property.Property.PropertyType) == typeof(bool))
                         throw new Exception("Verb option cannot be a bool");
                     verb = property;
-                }
-
-                if (string.IsNullOrEmpty(opt.Name) && !opt.Verb)
-                    throw new Exception($"Empty option name for property '{property.Property.Name}'");
-                if (opt.Name.Contains(" ") || opt.Name.StartsWith("-"))
-                    throw new Exception($"Invalid option name '{opt.Name}'");
-
-                if (names.Contains(opt.Name.ToLower())) {
-                    throw new Exception($"Duplicated option name '{opt.Name}'");
-                }
-                if (shortNames.Contains(opt.ShortName)) {
-                    throw new Exception($"Duplicated option short name '{opt.ShortName}'");
                 }
 
                 // Bool options cannot be required
@@ -114,8 +101,23 @@ namespace CmdLineArgsParser
 
                 names.Add(opt.Name.ToLower());
                 if (opt.ShortName != '\0')
-                    shortNames.Add(opt.ShortName);
+                    shortNames.Add(char.ToLower(opt.ShortName));
             }
+        }
+
+        private void ValidateName(OptionProperty property, HashSet<string> usedNames, HashSet<char> usedShortNames)
+        {
+            if (string.IsNullOrEmpty(property.Option.Name))
+                throw new Exception($"Missing option name for property '{property.Property.Name}'");
+            if (string.IsNullOrEmpty(property.Option.Name))
+                throw new Exception($"Empty option name for property '{property.Property.Name}'");
+            if (property.Option.Name.Contains(" ") || property.Option.Name.StartsWith("-"))
+                throw new Exception($"Invalid option name '{property.Option.Name}'");
+
+            if (usedNames.Contains(property.Option.Name.ToLower()))
+                throw new Exception($"Duplicated option name '{property.Option.Name}'");
+            if (usedShortNames.Contains(char.ToLower(property.Option.ShortName)))
+                throw new Exception($"Duplicated option short name '{property.Option.ShortName}'");
         }
 
         private void ValidateValidValues(OptionProperty property, string[] validValues)
