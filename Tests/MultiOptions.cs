@@ -15,7 +15,6 @@ public class MultiOptions : BaseTest
     public void Boolean()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-bc",
@@ -25,7 +24,6 @@ public class MultiOptions : BaseTest
         CheckPropertyValue("Boolean2", res, true);
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--boolean",
@@ -42,7 +40,6 @@ public class MultiOptions : BaseTest
     public void String()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-s", "value1",
@@ -53,7 +50,6 @@ public class MultiOptions : BaseTest
         CheckPropertyValue("String2", res, "value2");
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--string", "value1",

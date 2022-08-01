@@ -15,7 +15,6 @@ public class Errors : BaseTest
     public void InvalidVerb()
     {
         Parser.Parse<Options>(
-            new ParserSettings(),
             new[]
             {
                 "testVerb",
@@ -28,7 +27,6 @@ public class Errors : BaseTest
     public void InvalidOption()
     {
         Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--int", "5",
@@ -38,7 +36,6 @@ public class Errors : BaseTest
         CheckErrors(new [] { "Value without option: 'testvalue'" });
 
         Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--invalid",
@@ -47,7 +44,6 @@ public class Errors : BaseTest
         CheckErrors(new [] { "Unknown option 'invalid'" });
 
         Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-x",
@@ -62,7 +58,6 @@ public class Errors : BaseTest
     public void InvalidValue()
     {
         Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--int", "xyz"
@@ -71,7 +66,6 @@ public class Errors : BaseTest
         CheckErrors(new [] { "Invalid value for option 'int' (expected int): xyz" });
 
         Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--double", "xyz"
@@ -86,7 +80,6 @@ public class Errors : BaseTest
     public void InvalidOptionValue()
     {
         Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--stringwithvalues", "First2"
@@ -95,7 +88,6 @@ public class Errors : BaseTest
         CheckErrors(new [] { "Invalid value for option 'stringwithvalues': First2" });
 
         Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-v", "First2"
@@ -110,7 +102,6 @@ public class Errors : BaseTest
     public void OptionSetMultipleTimes()
     {
         Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--int", "5",
@@ -120,7 +111,6 @@ public class Errors : BaseTest
         CheckErrors(new [] { "Option 'int' set multiple times" });
 
         Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--stringwithvalues", "First",
@@ -134,7 +124,6 @@ public class Errors : BaseTest
     public void RequiredOptionNotSet()
     {
         Parser.Parse<OptionsRequired>(
-            new ParserSettings(),
             new []
             {
                 "--int", "5",
@@ -147,7 +136,6 @@ public class Errors : BaseTest
     public void RequiredOptionForVerbNotSet()
     {
         Parser.Parse<OptionsRequired>(
-            new ParserSettings(),
             new []
             {
                 "verb1",
@@ -162,7 +150,6 @@ public class Errors : BaseTest
     public void OptionForVerb()
     {
         Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "verb2",

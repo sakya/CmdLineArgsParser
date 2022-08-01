@@ -15,7 +15,6 @@ public class FromString : BaseTest
     public void OptionsFromString()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             "verb1 -bc --stringwithvalues First --stringarray \"test1\" --stringarray \"string with spaces\"",
             out Errors);
         CheckPropertyValue("Verb", res, Options.Verbs.Verb1);
@@ -29,7 +28,6 @@ public class FromString : BaseTest
     public void MixedSyntax()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             "verb1 -bc --stringwithvalues=First --stringarray \"test1\" --stringarray=\"string with spaces\"",
             out Errors);
         CheckPropertyValue("Verb", res, Options.Verbs.Verb1);

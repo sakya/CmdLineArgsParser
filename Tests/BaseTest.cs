@@ -9,7 +9,7 @@ namespace Tests;
 
 public abstract class BaseTest
 {
-    protected readonly Parser Parser = new Parser();
+    protected readonly Parser Parser = new Parser(new ParserSettings());
     protected List<ParserError>? Errors;
 
     protected void CheckPropertyValue(string propertyName, object res, object value)

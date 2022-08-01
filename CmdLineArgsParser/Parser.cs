@@ -46,6 +46,15 @@ namespace CmdLineArgsParser
         private OptionProperty _verbOption = null;
         private object _verbValue = null;
 
+        public Parser(ParserSettings settings = null)
+        {
+            if (settings == null)
+                settings = new ParserSettings();
+            Settings = settings;
+        }
+
+        public ParserSettings Settings { get; private set; }
+
         #region private operations
         /// <summary>
         /// Validate the options type
@@ -65,8 +74,7 @@ namespace CmdLineArgsParser
                 if (!property.Property.CanWrite)
                     throw new Exception($"Readonly property '{property.Property.Name}'");
 
-                if (string.IsNullOrEmpty(property.Option.Name))
-                    throw new Exception($"Missing option name for property '{property.Property.Name}'");
+                ValidateName(property, names, shortNames);
 
                 if (opt.Verb) {
                     if (verb != null)
@@ -75,18 +83,6 @@ namespace CmdLineArgsParser
                     if (GetOptionBaseType(property.Property.PropertyType) == typeof(bool))
                         throw new Exception("Verb option cannot be a bool");
                     verb = property;
-                }
-
-                if (string.IsNullOrEmpty(opt.Name) && !opt.Verb)
-                    throw new Exception($"Empty option name for property '{property.Property.Name}'");
-                if (opt.Name.Contains(" ") || opt.Name.StartsWith("-"))
-                    throw new Exception($"Invalid option name '{opt.Name}'");
-
-                if (names.Contains(opt.Name.ToLower())) {
-                    throw new Exception($"Duplicated option name '{opt.Name}'");
-                }
-                if (shortNames.Contains(opt.ShortName)) {
-                    throw new Exception($"Duplicated option short name '{opt.ShortName}'");
                 }
 
                 // Bool options cannot be required
@@ -100,32 +96,54 @@ namespace CmdLineArgsParser
                     throw new Exception($"Cannot set both ValidValues and OnlyForVerbs for option '{opt.Name}'");
                 }
 
-                // Check valid values
-                if (validValues?.Length > 0) {
-                    foreach (var validValue in validValues) {
-                        var v = GetValueFromString(property.Property.PropertyType, validValue, out _);
-                        if (v == null)
-                            throw new Exception($"Invalid value for option '{opt.Name}': {validValue}");
-                    }
-                }
-
-                // Check OnlyForVerbs
-                if (onlyForVerbs?.Length > 0) {
-                    if (opt.Verb)
-                        throw new Exception($"Verb option cannot have OnlyForVerbs set");
-                    if (verb == null)
-                        throw new Exception($"OnlyForVerbs set for option '{ opt.Name }' but no verb defined");
-
-                    foreach (var ofv in onlyForVerbs) {
-                        var v = GetValueFromString(verb.Property.PropertyType, ofv, out _);
-                        if (v == null)
-                            throw new Exception($"Invalid OnlyForVerbs for option '{opt.Name}': {ofv}");
-                    }
-                }
+                ValidateValidValues(property, validValues);
+                ValidateOnlyForVerbs(property, verb, onlyForVerbs);
 
                 names.Add(opt.Name.ToLower());
                 if (opt.ShortName != '\0')
-                    shortNames.Add(opt.ShortName);
+                    shortNames.Add(char.ToLower(opt.ShortName));
+            }
+        }
+
+        private void ValidateName(OptionProperty property, HashSet<string> usedNames, HashSet<char> usedShortNames)
+        {
+            if (string.IsNullOrEmpty(property.Option.Name))
+                throw new Exception($"Missing option name for property '{property.Property.Name}'");
+            if (string.IsNullOrEmpty(property.Option.Name))
+                throw new Exception($"Empty option name for property '{property.Property.Name}'");
+            if (property.Option.Name.Contains(" ") || property.Option.Name.StartsWith("-"))
+                throw new Exception($"Invalid option name '{property.Option.Name}'");
+
+            if (usedNames.Contains(property.Option.Name.ToLower()))
+                throw new Exception($"Duplicated option name '{property.Option.Name}'");
+            if (usedShortNames.Contains(char.ToLower(property.Option.ShortName)))
+                throw new Exception($"Duplicated option short name '{property.Option.ShortName}'");
+        }
+
+        private void ValidateValidValues(OptionProperty property, string[] validValues)
+        {
+            if (validValues?.Length > 0) {
+                foreach (var validValue in validValues) {
+                    var v = GetValueFromString(property.Property.PropertyType, validValue, out _);
+                    if (v == null)
+                        throw new Exception($"Invalid value for option '{property.Option.Name}': {validValue}");
+                }
+            }
+        }
+
+        private void ValidateOnlyForVerbs(OptionProperty property, OptionProperty verb, string[] onlyForVerbs)
+        {
+            if (onlyForVerbs?.Length > 0) {
+                if (property.Option.Verb)
+                    throw new Exception($"Verb option cannot have OnlyForVerbs set");
+                if (verb == null)
+                    throw new Exception($"OnlyForVerbs set for option '{ property.Option.Name }' but no verb defined");
+
+                foreach (var ofv in onlyForVerbs) {
+                    var v = GetValueFromString(verb.Property.PropertyType, ofv, out _);
+                    if (v == null)
+                        throw new Exception($"Invalid OnlyForVerbs for option '{property.Option.Name}': {ofv}");
+                }
             }
         }
 
@@ -175,6 +193,18 @@ namespace CmdLineArgsParser
                 expectedType = "float";
                 if (float.TryParse(value, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out float floatValue))
                     return floatValue;
+                return null;
+            }
+
+            if (propertyType == typeof(DateTime)) {
+                expectedType = "DateTime";
+                if (!string.IsNullOrEmpty(Settings.DateTimeFormat)) {
+                    if (DateTime.TryParseExact(value, Settings.DateTimeFormat, null, DateTimeStyles.None, out var dtValue))
+                        return dtValue;
+                } else {
+                    if (DateTime.TryParse(value, out var dtValue))
+                        return dtValue;
+                }
                 return null;
             }
             return null;

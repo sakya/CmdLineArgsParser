@@ -53,7 +53,7 @@ namespace CmdLineArgsParser
             if (verb != null)
                 usage = $"{usage} {(verb.Option.Required ? verb.Option.Name : $"[{ verb.Option.Name }]")}";
 
-            foreach (var req in properties.Where(p => !p.Option.Verb && string.IsNullOrEmpty(p.Option.OnlyForVerbs?.Trim()) && p.Option.Required).OrderBy(p => p.Option.Name)) {
+            foreach (var req in properties.Where(p => !p.Option.Verb && p.Option.Required).OrderBy(p => p.Option.Name)) {
                 usage = $"{usage} --{req.Option.Name}{ (useEqualSyntax ? "=" : string.Empty) }VALUE";
             }
             if (properties.Any(p => !p.Option.Verb && !p.Option.Required))

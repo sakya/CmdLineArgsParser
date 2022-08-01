@@ -9,18 +9,6 @@ namespace CmdLineArgsParser
     public partial class Parser
     {
         /// <summary>
-        /// Parse <see cref="args"/> using the default <see cref="ParserSettings"/>
-        /// </summary>
-        /// <param name="args">The arguments to parse</param>
-        /// <param name="errors">A list of <see cref="ParserError"/></param>
-        /// <typeparam name="T">The options type</typeparam>
-        /// <returns>An instance of <see cref="T"/></returns>
-        public T Parse<T>(string args, out List<ParserError> errors) where T : IOptions, new()
-        {
-            return Parse<T>(new ParserSettings(), args, out errors);
-        }
-
-        /// <summary>
         /// Parse <see cref="args"/> using the given <see cref="settings"/>
         /// </summary>
         /// <param name="settings">The <see cref="ParserSettings"/></param>
@@ -28,7 +16,7 @@ namespace CmdLineArgsParser
         /// <param name="errors">A list of <see cref="ParserError"/></param>
         /// <typeparam name="T">The options type</typeparam>
         /// <returns>An instance of <see cref="T"/></returns>
-        public T Parse<T>(ParserSettings settings, string args, out List<ParserError> errors) where T : IOptions, new()
+        public T Parse<T>(string args, out List<ParserError> errors) where T : IOptions, new()
         {
             var splitArgs = new List<string>();
             var match = Regex.Match(args, "(\"[^\"]+\"|[^\\s\"]+)");
@@ -43,19 +31,7 @@ namespace CmdLineArgsParser
                 match = match.NextMatch();
             }
 
-            return Parse<T>(settings, splitArgs.ToArray(), out errors);
-        }
-
-        /// <summary>
-        /// Parse <see cref="args"/> using the default <see cref="ParserSettings"/>
-        /// </summary>
-        /// <param name="args">The arguments to parse</param>
-        /// <param name="errors">A list of <see cref="ParserError"/></param>
-        /// <typeparam name="T">The options type</typeparam>
-        /// <returns>An instance of <see cref="T"/></returns>
-        public T Parse<T>(string[] args, out List<ParserError> errors) where T : IOptions, new()
-        {
-            return Parse<T>(new ParserSettings(), args, out errors);
+            return Parse<T>(splitArgs.ToArray(), out errors);
         }
 
         /// <summary>
@@ -66,11 +42,11 @@ namespace CmdLineArgsParser
         /// <param name="errors">A list of <see cref="ParserError"/></param>
         /// <typeparam name="T">The options type</typeparam>
         /// <returns>An instance of <see cref="T"/></returns>
-        public T Parse<T>(ParserSettings settings, string[] args, out List<ParserError> errors) where T : IOptions, new()
+        public T Parse<T>(string[] args, out List<ParserError> errors) where T : IOptions, new()
         {
             ValidateOptionsType<T>();
 
-            if (settings.EnableEqualSyntax)
+            if (Settings.EnableEqualSyntax)
                 args = ParseArgumentsForEqualSyntax(args);
 
             var res = new T();

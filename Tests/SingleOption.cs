@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CmdLineArgsParser;
 using NUnit.Framework;
@@ -16,7 +17,6 @@ public class SingleOption : BaseTest
     public void Boolean()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-b",
@@ -25,7 +25,6 @@ public class SingleOption : BaseTest
         CheckPropertyValue("Boolean1", res, true);
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--boolean",
@@ -40,7 +39,6 @@ public class SingleOption : BaseTest
     public void String()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-s", "value"
@@ -49,7 +47,6 @@ public class SingleOption : BaseTest
         CheckPropertyValue("String", res, "value");
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--string", "value"
@@ -65,7 +62,6 @@ public class SingleOption : BaseTest
     public void StringWithValues()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-v", "First"
@@ -74,7 +70,6 @@ public class SingleOption : BaseTest
         CheckPropertyValue("StringWithValues", res, "First");
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--stringwithvalues", "First"
@@ -89,7 +84,6 @@ public class SingleOption : BaseTest
     public void Int()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-i", "5"
@@ -98,7 +92,6 @@ public class SingleOption : BaseTest
         CheckPropertyValue("IntNumber", res, 5);
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--int", "5"
@@ -113,7 +106,6 @@ public class SingleOption : BaseTest
     public void Double()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-d", "5.3"
@@ -122,7 +114,6 @@ public class SingleOption : BaseTest
         CheckPropertyValue("DoubleNumber", res, 5.3);
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--double", "5.3"
@@ -137,7 +128,6 @@ public class SingleOption : BaseTest
     public void StringArray()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-a", "test1",
@@ -147,7 +137,6 @@ public class SingleOption : BaseTest
         CheckPropertyValue("StringArray", res, new [] { "test1", "test2" });
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--stringarray", "test1",
@@ -163,7 +152,6 @@ public class SingleOption : BaseTest
     public void StringList()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-l", "test1",
@@ -173,7 +161,6 @@ public class SingleOption : BaseTest
         CheckPropertyValue("StringList", res, new List<string>() { "test1", "test2" });
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--stringlist", "test1",
@@ -189,7 +176,6 @@ public class SingleOption : BaseTest
     public void Enum()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "-e", "One",
@@ -198,7 +184,6 @@ public class SingleOption : BaseTest
         CheckPropertyValue("Enum", res, Options.EnumValues.One);
 
         res = Parser.Parse<Options>(
-            new ParserSettings(),
             new []
             {
                 "--enum", "Two",
@@ -208,10 +193,33 @@ public class SingleOption : BaseTest
     }
 
     [Test]
+    public void DateTime()
+    {
+        var res = Parser.Parse<Options>(
+            new[]
+            {
+                "--datetime", "01/01/2022 3:12:00 PM"
+            },
+            out Errors);
+        CheckPropertyValue("DateTime", res, new DateTime(2022, 1, 1, 15, 12, 0));
+
+        var parser = new Parser(new ParserSettings()
+        {
+            DateTimeFormat = "yyyyMMdd HH:mm:ss"
+        });
+        res = parser.Parse<Options>(
+            new[]
+            {
+                "--datetime", "20221201 15:45:22"
+            },
+            out Errors);
+        CheckPropertyValue("DateTime", res, new DateTime(2022, 12, 1, 15, 45, 22));
+    }
+
+    [Test]
     public void Verb()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new[]
             {
                 "verb1"
@@ -224,7 +232,6 @@ public class SingleOption : BaseTest
     public void OptionForVerb()
     {
         var res = Parser.Parse<Options>(
-            new ParserSettings(),
             new[]
             {
                 "verb1",

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using CmdLineArgsParser;
@@ -56,4 +57,7 @@ public class Options : IOptions
 
     [Option("forverb1", OnlyForVerbs = "Verb1;Verb3")]
     public bool? OptionForVerb1 { get; set; }
+
+    [Option("datetime")]
+    public DateTime? DateTime { get; set; }
 }
