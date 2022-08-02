@@ -36,18 +36,22 @@ The `ShowUsage` method prints to the console the options and the help text
 Example output:
 ```
 Usage:
-Demo.dll action --input VALUE --output VALUE [OPTIONS]
-
+Demo.dll action --input=VALUE --output=VALUE [OPTIONS]
 Action:
   Backup                      Description of backup verb
   Copy                        Description of copy verb
   Delete                      Description of delete verb
-
 General:
+  --enum=VALUE                An option with enum values
+                              Valid values: EnumValue1, EnumValue2, EnumValue3,
+                              EnumValue4
   -i, --input=VALUE           The input file full path
   -o, --output=VALUE          The output file full path
   -w, --overwrite             Overwrite output without warning
-  -r, --retry=VALUE           The number of time the command is retried in case of error
+  -r, --retry=VALUE           The number of time the command is retried in case
+                              of error
+  --withValues=VALUE          An option with a list of valid values
+                              Valid values: value1, value2
   -y, --yes                   Assume yes as a reply to all the questions
 ```
 
