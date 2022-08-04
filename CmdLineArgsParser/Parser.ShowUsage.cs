@@ -14,10 +14,11 @@ namespace CmdLineArgsParser
         /// <summary>
         /// Writes options to the <see cref="Console"/>
         /// </summary>
+        /// <param name="assemblyName">The assembly name to use for the usage line (defaults to the calling assembly name)</param>
         /// <param name="columnsForName">The number of columns to reserve for option names (default: 0)</param>
         /// <param name="useEqualSyntax">If set to true the usage uses the equal syntax (e.g. --option=VALUE)</param>
         /// <typeparam name="T"></typeparam>
-        public void ShowUsage<T>(int columnsForName = 30, bool useEqualSyntax = true) where T : IOptions, new()
+        public void ShowUsage<T>(string assemblyName = null, int columnsForName = 30, bool useEqualSyntax = true) where T : IOptions, new()
         {
             if (columnsForName <= 0)
                 throw new ArgumentException($"{nameof(columnsForName)} must be greater than zero",
@@ -27,7 +28,9 @@ namespace CmdLineArgsParser
             var properties = GetProperties<T>();
             var verb = properties.FirstOrDefault(p => p.Option.Verb);
 
-            ShowUsageLine(Path.GetFileName(Assembly.GetCallingAssembly().Location), properties, verb, useEqualSyntax);
+            if (string.IsNullOrEmpty(assemblyName))
+                assemblyName = Path.GetFileName(Assembly.GetCallingAssembly().Location);
+            ShowUsageLine(assemblyName, properties, verb, useEqualSyntax);
 
             // Options
             // Verb first
