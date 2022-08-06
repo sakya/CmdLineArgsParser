@@ -9,9 +9,8 @@ namespace CmdLineArgsParser
     public partial class Parser
     {
         /// <summary>
-        /// Parse <see cref="args"/> using the given <see cref="settings"/>
+        /// Parse <see cref="args"/>
         /// </summary>
-        /// <param name="settings">The <see cref="ParserSettings"/></param>
         /// <param name="args">The arguments to parse</param>
         /// <param name="errors">A list of <see cref="ParserError"/></param>
         /// <typeparam name="T">The options type</typeparam>
@@ -35,9 +34,8 @@ namespace CmdLineArgsParser
         }
 
         /// <summary>
-        /// Parse <see cref="args"/> using the given <see cref="settings"/>
+        /// Parse <see cref="args"/>
         /// </summary>
-        /// <param name="settings">The <see cref="ParserSettings"/></param>
         /// <param name="args">The arguments to parse</param>
         /// <param name="errors">A list of <see cref="ParserError"/></param>
         /// <typeparam name="T">The options type</typeparam>
@@ -60,32 +58,27 @@ namespace CmdLineArgsParser
             bool first = true;
             foreach (var arg in args) {
                 if (arg.StartsWith("--")) {
-                    if (lastOption != null && !lastOption.Set)
-                        errors.Add(new ParserError(lastOption.Option.Name, $"Missing value for option '{ lastOption.Option.Name }'"));
+                    CheckLastOption(lastOption, errors);
                     lastOption = ParseNameOption(res, properties, arg, errors);
                 } else if (arg.StartsWith(("-"))) {
-                    if (lastOption != null && !lastOption.Set)
-                        errors.Add(new ParserError(lastOption.Option.Name, $"Missing value for option '{ lastOption.Option.Name }'"));
+                    CheckLastOption(lastOption, errors);
                     lastOption = ParseShortNameOption(res, properties, arg, errors);
                 } else {
                     if (lastOption != null) {
                         SetOptionValue(lastOption, res, arg, errors);
                         lastOption = null;
                     } else {
-                        if (first && _verbOption != null) {
+                        if (first && _verbOption != null)
                             SetOptionValue(_verbOption,  res,arg, errors);
-                        } else {
+                        else
                             errors.Add(new ParserError(null, $"Value without option: '{arg}'"));
-                        }
                     }
                 }
 
                 first = false;
             }
 
-            if (lastOption != null && !lastOption.Set)
-                errors.Add(new ParserError(lastOption.Option.Name, $"Missing value for option '{ lastOption.Option.Name }'"));
-
+            CheckLastOption(lastOption, errors);
             CheckRequiredOptions(properties, errors);
             CheckMutuallyExclusiveOptions(properties, errors);
 
@@ -132,6 +125,12 @@ namespace CmdLineArgsParser
             }
 
             return res;
+        }
+
+        private void CheckLastOption(OptionProperty option, List<ParserError> errors)
+        {
+            if (option != null && !option.Set)
+                errors.Add(new ParserError(option.Option.Name, $"Missing value for option '{ option.Option.Name }'"));
         }
 
         /// <summary>
@@ -201,19 +200,19 @@ namespace CmdLineArgsParser
                 _verbValue = value;
 
             if (option.Property.PropertyType.IsArray) {
-                SetArrayOptionValue(option, obj, value, errors);
+                SetArrayOptionValue(option, obj, value);
             } else if (option.Property.PropertyType.IsGenericType && typeof(List<>).IsAssignableFrom(option.Property.PropertyType.GetGenericTypeDefinition())) {
-                SetListOptionValue(option, obj, value, errors);
+                SetListOptionValue(option, obj, value);
             } else {
                 SetSimpleOptionValue(option, obj, value, errors);
             }
 
             CheckValidValues(option, obj, value, errors);
-            CheckOnlyForVerbs(option, obj, value, errors);
+            CheckOnlyForVerbs(option, obj, errors);
             option.Set = true;
         }
 
-        private void SetArrayOptionValue(OptionProperty option, object obj, object value, List<ParserError> errors)
+        private void SetArrayOptionValue(OptionProperty option, object obj, object value)
         {
             Array array = option.Property.GetValue(obj) as Array;
             if (array == null) {
@@ -231,7 +230,7 @@ namespace CmdLineArgsParser
             option.Property.SetValue(obj, array);
         }
 
-        private void SetListOptionValue(OptionProperty option, object obj, object value, List<ParserError> errors)
+        private void SetListOptionValue(OptionProperty option, object obj, object value)
         {
             IList list = option.Property.GetValue(obj) as IList;
             if (list == null) {
@@ -271,7 +270,7 @@ namespace CmdLineArgsParser
             }
         }
 
-        private void CheckOnlyForVerbs(OptionProperty option, object obj, object value, List<ParserError> errors)
+        private void CheckOnlyForVerbs(OptionProperty option, object obj, List<ParserError> errors)
         {
             if (option.Option.OnlyForVerbs?.Length > 0) {
                 if (_verbValue == null) {

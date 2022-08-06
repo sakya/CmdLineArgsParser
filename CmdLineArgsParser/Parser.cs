@@ -43,8 +43,8 @@ namespace CmdLineArgsParser
         }
         #endregion
 
-        private OptionProperty _verbOption = null;
-        private object _verbValue = null;
+        private OptionProperty _verbOption;
+        private object _verbValue;
 
         public Parser(ParserSettings settings = null)
         {
