@@ -76,6 +76,37 @@ public class Errors : BaseTest
         Assert.Pass();
     }
 
+
+    [Test]
+    public void MissingOptionValue()
+    {
+        Parser.Parse<Options>(
+            new []
+            {
+                "--stringwithvalues",
+            },
+            out Errors);
+        CheckErrors(new [] { "Missing value for option 'stringwithvalues'" });
+
+        Parser.Parse<Options>(
+            new []
+            {
+                "--stringwithvalues",
+                "--int", "5"
+            },
+            out Errors);
+        CheckErrors(new [] { "Missing value for option 'stringwithvalues'" });
+
+        Parser.Parse<Options>(
+            new []
+            {
+                "--int", "5",
+                "--stringwithvalues",
+            },
+            out Errors);
+        CheckErrors(new [] { "Missing value for option 'stringwithvalues'" });
+    }
+
     [Test]
     public void InvalidOptionValue()
     {

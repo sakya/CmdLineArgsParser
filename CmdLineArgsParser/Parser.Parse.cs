@@ -60,8 +60,12 @@ namespace CmdLineArgsParser
             bool first = true;
             foreach (var arg in args) {
                 if (arg.StartsWith("--")) {
+                    if (lastOption != null && !lastOption.Set)
+                        errors.Add(new ParserError(lastOption.Option.Name, $"Missing value for option '{ lastOption.Option.Name }'"));
                     lastOption = ParseNameOption(res, properties, arg, errors);
                 } else if (arg.StartsWith(("-"))) {
+                    if (lastOption != null && !lastOption.Set)
+                        errors.Add(new ParserError(lastOption.Option.Name, $"Missing value for option '{ lastOption.Option.Name }'"));
                     lastOption = ParseShortNameOption(res, properties, arg, errors);
                 } else {
                     if (lastOption != null) {
@@ -78,6 +82,9 @@ namespace CmdLineArgsParser
 
                 first = false;
             }
+
+            if (lastOption != null && !lastOption.Set)
+                errors.Add(new ParserError(lastOption.Option.Name, $"Missing value for option '{ lastOption.Option.Name }'"));
 
             CheckRequiredOptions(properties, errors);
             CheckMutuallyExclusiveOptions(properties, errors);
