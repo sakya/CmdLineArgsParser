@@ -67,5 +67,4 @@ public class Options : IOptions
     [Option("mt2",
         MutuallyExclusive = "group")]
     public bool MutuallyExclusive2 { get; set; }
-
 }
