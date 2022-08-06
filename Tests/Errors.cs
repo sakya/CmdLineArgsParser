@@ -76,7 +76,6 @@ public class Errors : BaseTest
         Assert.Pass();
     }
 
-
     [Test]
     public void MissingOptionValue()
     {
