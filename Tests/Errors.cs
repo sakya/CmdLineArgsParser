@@ -158,4 +158,17 @@ public class Errors : BaseTest
             out Errors);
         CheckErrors(new [] { "Option 'forverb1' is not valid for verb Verb2" });
     }
+
+    [Test]
+    public void MutuallyExclusive()
+    {
+        Parser.Parse<Options>(
+            new []
+            {
+                "--mt1", "value",
+                "--mt2",
+            },
+            out Errors);
+        CheckErrors(new [] { "Option 'mt1' cannot be used with option 'mt2'" });
+    }
 }

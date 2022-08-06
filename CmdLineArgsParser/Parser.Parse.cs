@@ -80,6 +80,7 @@ namespace CmdLineArgsParser
             }
 
             CheckRequiredOptions(properties, errors);
+            CheckMutuallyExclusiveOptions(properties, errors);
 
             return res;
         }
@@ -153,6 +154,25 @@ namespace CmdLineArgsParser
         }
 
         /// <summary>
+        /// Check mutually exclusive options
+        /// </summary>
+        /// <param name="properties"></param>
+        /// <param name="errors"></param>
+        private void CheckMutuallyExclusiveOptions(OptionProperty[] properties, List<ParserError> errors)
+        {
+            HashSet<string> eAdded = new HashSet<string>();
+            foreach (var p in properties.Where(p => !string.IsNullOrEmpty(p.Option.MutuallyExclusive) && p.Set)) {
+                var otherOption = properties.FirstOrDefault(op => op != p && op.Set && string.Compare(op.Option.MutuallyExclusive,
+                    p.Option.MutuallyExclusive, StringComparison.InvariantCultureIgnoreCase) == 0);
+                if (otherOption != null && !eAdded.Contains($"{p.Option.Name};{otherOption.Option.Name}") && !eAdded.Contains($"{otherOption.Option.Name};{p.Option.Name}")) {
+                    errors.Add(new ParserError(p.Option.Name,
+                        $"Option '{p.Option.Name}' cannot be used with option '{otherOption.Option.Name}'"));
+                    eAdded.Add($"{p.Option.Name};{otherOption.Option.Name}");
+                }
+            }
+        }
+
+        /// <summary>
         /// Set a property value
         /// </summary>
         /// <param name="option"></param>
@@ -183,7 +203,6 @@ namespace CmdLineArgsParser
 
             CheckValidValues(option, obj, value, errors);
             CheckOnlyForVerbs(option, obj, value, errors);
-
             option.Set = true;
         }
 

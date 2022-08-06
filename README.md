@@ -13,6 +13,7 @@ When defining the options you can specify:
 - **OnlyForVerbs**: a list of verbs this option is valid for separated by a semicolon 
 - **Required**: boolean indicating if the option is required
 - **ValidValues**: a list of valid values separated by a semicolon (e.g. "value1;value2")
+- **MutuallyExclusive**: a string to set the option group name. More than one Option with the same MutuallyExclusive value cannot be set.
 - **Description**: the description of the option
 - **Section**: the section this option belongs to. This is only used by the `ShowUsage` method. If no section name is set the option belongs to the 'General' section.
 

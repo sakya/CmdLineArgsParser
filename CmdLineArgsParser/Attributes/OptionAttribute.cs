@@ -58,6 +58,11 @@ namespace CmdLineArgsParser.Attributes
         /// </summary>
         public string ValidValues { get; set; }
 
+        /// <summary>
+        /// This option cannot be set with other options with the same value of <see cref="MutuallyExclusive"/>
+        /// </summary>
+        public string MutuallyExclusive { get; set; }
+
         public string[] GetValidValues()
         {
             if (!string.IsNullOrEmpty(ValidValues))

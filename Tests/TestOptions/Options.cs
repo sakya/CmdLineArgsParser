@@ -60,4 +60,12 @@ public class Options : IOptions
 
     [Option("datetime")]
     public DateTime? DateTime { get; set; }
+
+    [Option("mt1",
+        MutuallyExclusive = "group")]
+    public string? MutuallyExclusive1 { get; set; }
+    [Option("mt2",
+        MutuallyExclusive = "group")]
+    public bool MutuallyExclusive2 { get; set; }
+
 }
