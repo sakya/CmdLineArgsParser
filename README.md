@@ -1,6 +1,7 @@
 # CmdLineArgsParser
 [![CodeFactor](https://www.codefactor.io/repository/github/sakya/cmdlineargsparser/badge)](https://www.codefactor.io/repository/github/sakya/cmdlineargsparser)
 [![NuGet](https://img.shields.io/nuget/v/cmdlineargsparser.svg)](https://www.nuget.org/packages/CmdLineArgsParser/)
+[![License](https://img.shields.io/github/license/sakya/cmdlineargsparser)](https://github.com/sakya/cmdlineargsparser/blob/master/LICENSE)
 
 CmdLineArgsParser helps you parse command line arguments.
 
