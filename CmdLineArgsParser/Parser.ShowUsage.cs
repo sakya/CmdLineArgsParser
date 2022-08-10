@@ -164,6 +164,9 @@ namespace CmdLineArgsParser
             var validValues = GetShowValidValues(property);
             if (!string.IsNullOrEmpty(validValues))
                 description = $"{description}{ (string.IsNullOrEmpty(description) ? string.Empty : Environment.NewLine) }{validValues}";
+            if (property.IsEnumerable) {
+                description = $"{description}{Environment.NewLine}This option can be set multiple times";
+            }
 
             if (!string.IsNullOrEmpty(description)) {
                 var wrappedText = description.WordWrap(Console.WindowWidth - columnsForName).TrimEnd();

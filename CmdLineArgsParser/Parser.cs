@@ -40,6 +40,10 @@ namespace CmdLineArgsParser
                     return propertyType?.IsEnum == true;
                 }
             }
+
+            public bool IsEnumerable =>
+                Property.PropertyType.IsArray || Property.PropertyType.IsGenericType &&
+                typeof(List<>).IsAssignableFrom(Property.PropertyType.GetGenericTypeDefinition());
         }
         #endregion
 

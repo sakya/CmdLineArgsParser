@@ -59,4 +59,8 @@ public class Options : IOptions
     [Option("enum",
         Description = "An option with enum values")]
     public SomeEnumValues SomeEumValue { get; set; }
+
+    [Option("list",
+        Description = "An option you can set multiple times")]
+    public List<string>? SomeListValue { get; set; }
 }
