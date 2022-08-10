@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Resources;
 using System.Text;
 using CmdLineArgsParser.Extensions;
 using DescriptionAttribute = CmdLineArgsParser.Attributes.DescriptionAttribute;
@@ -20,15 +21,17 @@ namespace CmdLineArgsParser
         public void ShowUsage<T>(string assemblyName = null, int columnsForName = 30, bool useEqualSyntax = true) where T : IOptions, new()
         {
             if (columnsForName <= 0)
-                throw new ArgumentException($"{nameof(columnsForName)} must be greater than zero",
-                    nameof(columnsForName));
-
+                throw new ArgumentException($"{nameof(columnsForName)} must be greater than zero", nameof(columnsForName));
             ValidateOptionsType<T>();
+
+            var cAssembly = Assembly.GetCallingAssembly();
+            ShowAssemblyInformation(cAssembly);
+
             var properties = GetProperties<T>();
             var verb = properties.FirstOrDefault(p => p.Option.Verb);
 
             if (string.IsNullOrEmpty(assemblyName))
-                assemblyName = Path.GetFileName(Assembly.GetCallingAssembly().Location);
+                assemblyName = Path.GetFileName(cAssembly.Location);
             ShowUsageLine(assemblyName, properties, verb, useEqualSyntax);
 
             // Options
@@ -47,6 +50,34 @@ namespace CmdLineArgsParser
         }
 
         #region private operations
+
+        private void ShowAssemblyInformation(Assembly assembly)
+        {
+            bool newline = false;
+            if (assembly.GetCustomAttribute(typeof(AssemblyTitleAttribute)) is AssemblyTitleAttribute ta) {
+                Console.WriteLine($"{ta.Title} v{assembly.GetName().Version}");
+                newline = true;
+            }
+
+            if (assembly.GetCustomAttribute(typeof(AssemblyCopyrightAttribute)) is AssemblyCopyrightAttribute ca) {
+                Console.WriteLine(ca.Copyright);
+                newline = true;
+            }
+
+            if (newline) {
+                Console.WriteLine();
+                newline = false;
+            }
+
+            if (assembly.GetCustomAttribute(typeof(AssemblyDescriptionAttribute)) is AssemblyDescriptionAttribute da) {
+                Console.WriteLine(da.Description);
+                newline = true;
+            }
+
+            if (newline)
+                Console.WriteLine();
+        }
+
         private void ShowUsageLine(string callingAssembly, OptionProperty[] properties, OptionProperty verb, bool useEqualSyntax)
         {
             // Usage line

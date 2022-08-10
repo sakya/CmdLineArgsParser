@@ -1,4 +1,5 @@
-﻿using CmdLineArgsParser;
+﻿using System.Reflection;
+using CmdLineArgsParser;
 using Newtonsoft.Json;
 
 namespace Demo
