@@ -35,7 +35,8 @@ public class Options : IOptions
 
     [Option("output", 'o',
         Description = "The output file full path",
-        Required = true)]
+        Required = true,
+        OnlyForVerbs = "Backup;Copy")]
     public string? OutputFile { get; set; }
 
     [Option("retry", 'r',

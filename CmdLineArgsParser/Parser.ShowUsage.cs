@@ -28,16 +28,16 @@ namespace CmdLineArgsParser
             ShowAssemblyInformation(cAssembly);
 
             var properties = GetProperties<T>();
-            var verb = properties.FirstOrDefault(p => p.Option.Verb);
+            _verbOption = properties.FirstOrDefault(p => p.Option.Verb);
 
             if (string.IsNullOrEmpty(assemblyName))
                 assemblyName = Path.GetFileName(cAssembly.Location);
-            ShowUsageLine(assemblyName, properties, verb, useEqualSyntax);
+            ShowUsageLine(assemblyName, properties, _verbOption, useEqualSyntax);
 
             // Options
             // Verb first
-            if (verb != null && verb.HasValuesList) {
-                ShowVerbUsage(verb, columnsForName);
+            if (_verbOption != null && _verbOption.HasValuesList) {
+                ShowVerbUsage(_verbOption, columnsForName);
             }
 
             var sections = properties.GroupBy(p => p.Option.Section);
@@ -47,6 +47,8 @@ namespace CmdLineArgsParser
                     ShowOptionUsage(property, columnsForName, useEqualSyntax);
                 }
             }
+
+            _verbOption = null;
         }
 
         #region private operations
@@ -164,6 +166,10 @@ namespace CmdLineArgsParser
             var validValues = GetShowValidValues(property);
             if (!string.IsNullOrEmpty(validValues))
                 description = $"{description}{ (string.IsNullOrEmpty(description) ? string.Empty : Environment.NewLine) }{validValues}";
+            var onlyForVerbs = GetShowOnlyForVerbs(property);
+            if (!string.IsNullOrEmpty(onlyForVerbs))
+                description = $"{description}{ (string.IsNullOrEmpty(description) ? string.Empty : Environment.NewLine) }{onlyForVerbs}";
+
             if (property.IsEnumerable) {
                 description = $"{description}{Environment.NewLine}This option can be set multiple times";
             }
@@ -203,6 +209,24 @@ namespace CmdLineArgsParser
                     if (i != 0)
                         res = $"{res},";
                     res = $"{res} {enumValues[i]}";
+                }
+            }
+
+            return res;
+        }
+
+        private string GetShowOnlyForVerbs(OptionProperty property)
+        {
+            string res = null;
+
+            var onlyForVerbs = property.Option.GetOnlyForVerbs();
+            if (onlyForVerbs?.Length > 0) {
+                res = $"Valid for {_verbOption.Option.Name}:";
+                for (int i = 0; i < onlyForVerbs.Length; i++) {
+                    var v = GetValueFromString(_verbOption.Property.PropertyType, onlyForVerbs[i], out _);
+                    if (i != 0)
+                        res = $"{res},";
+                    res = $"{res} {v}";
                 }
             }
 

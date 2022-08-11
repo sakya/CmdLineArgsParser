@@ -10,6 +10,6 @@
     <RespositoryType>git</RespositoryType>
     <PackageTags>command line commandline argument option shell parser</PackageTags>
     <Description>CmdLineArgsParser helps you parse command line arguments.</Description>
-    <Version>0.5.1.0</Version>
+    <Version>0.6.0.0</Version>
   </PropertyGroup>
 </Project>
