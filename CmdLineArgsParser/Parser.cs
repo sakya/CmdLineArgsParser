@@ -42,8 +42,8 @@ namespace CmdLineArgsParser
             }
 
             public bool IsEnumerable =>
-                Property.PropertyType.IsArray || Property.PropertyType.IsGenericType &&
-                typeof(List<>).IsAssignableFrom(Property.PropertyType.GetGenericTypeDefinition());
+                Property.PropertyType.IsArray || (Property.PropertyType.IsGenericType &&
+                typeof(List<>).IsAssignableFrom(Property.PropertyType.GetGenericTypeDefinition()));
         }
         #endregion
 
