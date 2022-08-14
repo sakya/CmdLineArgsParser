@@ -52,6 +52,7 @@ namespace CmdLineArgsParser
             errors = new List<ParserError>();
 
             OptionProperty[] properties = GetProperties<T>();
+            SetDefaultValues(res, properties);
             _verbOption = properties.FirstOrDefault(p => p.Option.Verb);
 
             OptionProperty lastOption = null;
@@ -86,6 +87,15 @@ namespace CmdLineArgsParser
         }
 
         #region private operations
+
+        private void SetDefaultValues<T>(T obj, OptionProperty[] properties) where T : IOptions, new()
+        {
+            foreach (var opt in properties.Where(p => !string.IsNullOrEmpty(p.Option.DefaultValue))) {
+                var v = GetValueFromString(opt.Property.PropertyType, opt.Option.DefaultValue, out _);
+                opt.Property.SetValue(obj, v);
+            }
+        }
+
         private OptionProperty ParseNameOption<T>(T obj, OptionProperty[] properties, string arg, List<ParserError> errors) where T : IOptions, new()
         {
             var optName = arg.Substring(2);

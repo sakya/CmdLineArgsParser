@@ -174,6 +174,11 @@ namespace CmdLineArgsParser
                 description = $"{description}{Environment.NewLine}This option can be set multiple times";
             }
 
+            if (!string.IsNullOrEmpty(property.Option.DefaultValue)) {
+                var v = GetValueFromString(property.Property.PropertyType, property.Option.DefaultValue, out _);
+                description = $"{description}{Environment.NewLine}Default value: {v}";
+            }
+
             if (!string.IsNullOrEmpty(description)) {
                 var wrappedText = description.WordWrap(Console.WindowWidth - columnsForName).TrimEnd();
                 var lines = wrappedText.Split(new[] { Environment.NewLine }, StringSplitOptions.None);

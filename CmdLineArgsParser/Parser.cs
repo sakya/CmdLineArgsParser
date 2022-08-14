@@ -100,6 +100,7 @@ namespace CmdLineArgsParser
                     throw new Exception($"Cannot set both ValidValues and OnlyForVerbs for option '{opt.Name}'");
                 }
 
+                ValidateDefaultValue(property);
                 ValidateValidValues(property, validValues);
                 ValidateOnlyForVerbs(property, verb, onlyForVerbs);
 
@@ -122,6 +123,20 @@ namespace CmdLineArgsParser
                 throw new Exception($"Duplicated option name '{property.Option.Name}'");
             if (usedShortNames.Contains(char.ToLower(property.Option.ShortName)))
                 throw new Exception($"Duplicated option short name '{property.Option.ShortName}'");
+        }
+
+        private void ValidateDefaultValue(OptionProperty property)
+        {
+            if (!string.IsNullOrEmpty(property.Option.DefaultValue)) {
+                if (property.Option.Verb)
+                    throw new Exception("Verb option cannot have a default value");
+                if (GetOptionBaseType(property.Property.PropertyType) == typeof(bool))
+                    throw new Exception($"Bool option '{property.Option.Name}' cannot have a default value");
+
+                var v = GetValueFromString(property.Property.PropertyType, property.Option.DefaultValue, out _);
+                if (v == null)
+                    throw new Exception($"Invalid default value for option '{property.Option.Name}': {property.Option.DefaultValue}");
+            }
         }
 
         private void ValidateValidValues(OptionProperty property, string[] validValues)

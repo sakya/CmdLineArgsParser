@@ -1,4 +1,5 @@
-﻿using CmdLineArgsParser;
+﻿using System.Security.Cryptography;
+using CmdLineArgsParser;
 using CmdLineArgsParser.Attributes;
 
 namespace Demo;
@@ -64,4 +65,9 @@ public class Options : IOptions
     [Option("list",
         Description = "An option you can set multiple times")]
     public List<string>? SomeListValue { get; set; }
+
+    [Option("withdefaultvalue",
+        Description = "An option with a default value",
+        DefaultValue = "5")]
+    public int? WithDefaultValue { get; set; }
 }
