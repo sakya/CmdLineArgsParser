@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using CmdLineArgsParser;
+﻿using CmdLineArgsParser;
 using CmdLineArgsParser.Attributes;
 
 namespace Demo;
