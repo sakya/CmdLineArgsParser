@@ -100,8 +100,8 @@ namespace CmdLineArgsParser
                     throw new Exception($"Cannot set both ValidValues and OnlyForVerbs for option '{opt.Name}'");
                 }
 
-                ValidateDefaultValue(property);
                 ValidateValidValues(property, validValues);
+                ValidateDefaultValue(property, validValues);
                 ValidateOnlyForVerbs(property, verb, onlyForVerbs);
 
                 names.Add(opt.Name.ToLower());
@@ -113,11 +113,11 @@ namespace CmdLineArgsParser
         private void ValidateName(OptionProperty property, HashSet<string> usedNames, HashSet<char> usedShortNames)
         {
             if (string.IsNullOrEmpty(property.Option.Name))
-                throw new Exception($"Missing option name for property '{property.Property.Name}'");
-            if (string.IsNullOrEmpty(property.Option.Name))
                 throw new Exception($"Empty option name for property '{property.Property.Name}'");
             if (property.Option.Name.Contains(" ") || property.Option.Name.StartsWith("-"))
                 throw new Exception($"Invalid option name '{property.Option.Name}'");
+            if (property.Option.Name.Length == 1)
+                throw new Exception($"Option name '{property.Property.Name}' must contain at least two characters");
 
             if (usedNames.Contains(property.Option.Name.ToLower()))
                 throw new Exception($"Duplicated option name '{property.Option.Name}'");
@@ -125,8 +125,15 @@ namespace CmdLineArgsParser
                 throw new Exception($"Duplicated option short name '{property.Option.ShortName}'");
         }
 
-        private void ValidateDefaultValue(OptionProperty property)
+        private void ValidateDefaultValue(OptionProperty property, string[] validValues)
         {
+            List<object> vv = new List<object>();
+            if (validValues != null) {
+                foreach (var validValue in validValues) {
+                    vv.Add(GetValueFromString(property.Property.PropertyType, validValue, out _));
+                }
+            }
+
             if (!string.IsNullOrEmpty(property.Option.DefaultValue)) {
                 if (property.Option.Verb)
                     throw new Exception("Verb option cannot have a default value");
@@ -135,6 +142,8 @@ namespace CmdLineArgsParser
 
                 var v = GetValueFromString(property.Property.PropertyType, property.Option.DefaultValue, out _);
                 if (v == null)
+                    throw new Exception($"Invalid default value for option '{property.Option.Name}': {property.Option.DefaultValue}");
+                if (vv.Count > 0 && !vv.Contains(v))
                     throw new Exception($"Invalid default value for option '{property.Option.Name}': {property.Option.DefaultValue}");
             }
         }
@@ -186,7 +195,7 @@ namespace CmdLineArgsParser
             if (propertyType == typeof(bool)) {
                 value = value?.Trim().ToLower();
                 expectedType = "bool";
-                return value == "true" || value == "1";
+                return string.Compare(value, "true", StringComparison.InvariantCultureIgnoreCase) == 0 || value == "1";
             }
 
             if (propertyType?.IsEnum == true) {

@@ -90,9 +90,13 @@ namespace CmdLineArgsParser
 
         private void SetDefaultValues<T>(T obj, OptionProperty[] properties) where T : IOptions, new()
         {
-            foreach (var opt in properties.Where(p => !string.IsNullOrEmpty(p.Option.DefaultValue))) {
-                var v = GetValueFromString(opt.Property.PropertyType, opt.Option.DefaultValue, out _);
-                opt.Property.SetValue(obj, v);
+            foreach (var opt in properties) {
+                if (!string.IsNullOrEmpty(opt.Option.DefaultValue)) {
+                    var v = GetValueFromString(opt.Property.PropertyType, opt.Option.DefaultValue, out _);
+                    opt.Property.SetValue(obj, v);
+                } else if (GetOptionBaseType(opt.Property.PropertyType) == typeof(bool)) {
+                    opt.Property.SetValue(obj, false);
+                }
             }
         }
 
