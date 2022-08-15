@@ -62,6 +62,8 @@ General:
   -w, --overwrite             Overwrite output without warning
                               Valid for action: Copy, Backup
   -r, --retry=VALUE           The number of time the command is retried in case of error
+  --withdefaultvalue=VALUE    An option with a default value
+                              Default value: 5
   --withValues=VALUE          An option with a list of valid values
                               Valid values: value1, value2
   -y, --yes                   Assume yes as a reply to all the questions
@@ -82,33 +84,60 @@ public class Options : IOptions
         Delete,
     }
 
+    public enum SomeEnumValues
+    {
+        EnumValue1,
+        EnumValue2,
+        EnumValue3,
+        EnumValue4,
+    }
+
     [Option("action",
         Description = "The command to execute on the file",
         Verb = true, Required = true)]
     public Verbs Command { get; set; }
 
-    [Option("input", ShortName = 'i',
+    [Option("input", 'i',
         Description = "The input file full path",
         Required = true)]
     public string? InputFile { get; set; }
 
-    [Option("output", ShortName = 'o',
+    [Option("output", 'o',
         Description = "The output file full path",
-        Required = true)]
+        Required = true,
+        OnlyForVerbs = "Backup;Copy")]
     public string? OutputFile { get; set; }
 
-    [Option("retry", ShortName = 'r',
+    [Option("retry", 'r',
         Description = "The number of time the command is retried in case of error")]
     public int? Retry { get; set; }
 
-    [Option("yes", ShortName = 'y',
+    [Option("yes", 'y',
         Description = "Assume yes as a reply to all the questions")]
     public bool AlwaysYes { get; set; }
 
-    [Option("overwrite", ShortName = 'w',
+    [Option("overwrite", 'w',
         OnlyForVerbs = "Copy;Backup",
         Description = "Overwrite output without warning")]
     public bool OverwriteOutput { get; set; }
+
+    [Option("withValues",
+        ValidValues = "value1;value2",
+        Description = "An option with a list of valid values")]
+    public string? WithValues { get; set; }
+
+    [Option("enum",
+        Description = "An option with enum values")]
+    public SomeEnumValues SomeEumValue { get; set; }
+
+    [Option("list",
+        Description = "An option you can set multiple times")]
+    public List<string>? SomeListValue { get; set; }
+
+    [Option("withdefaultvalue",
+        Description = "An option with a default value",
+        DefaultValue = "5")]
+    public int? WithDefaultValue { get; set; }
 }
 ```
 
@@ -144,6 +173,10 @@ The returned `options` object
   "OutputFile": null,
   "Retry": 5,
   "AlwaysYes": true,
-  "OverwriteOutput": true
+  "OverwriteOutput": true,
+  "WithValues": null,
+  "SomeEumValue": 0,
+  "SomeListValue": null,
+  "WithDefaultValue": 5
 }
 ```
