@@ -127,18 +127,20 @@ namespace CmdLineArgsParser
 
         private void ValidateDefaultValue(OptionProperty property, string[] validValues)
         {
-            List<object> vv = new List<object>();
-            if (validValues != null) {
-                foreach (var validValue in validValues) {
-                    vv.Add(GetValueFromString(property.Property.PropertyType, validValue, out _));
-                }
-            }
-
             if (!string.IsNullOrEmpty(property.Option.DefaultValue)) {
                 if (property.Option.Verb)
                     throw new Exception("Verb option cannot have a default value");
                 if (GetOptionBaseType(property.Property.PropertyType) == typeof(bool))
                     throw new Exception($"Bool option '{property.Option.Name}' cannot have a default value");
+                if (property.IsEnumerable)
+                    throw new Exception($"Enumerable option '{property.Option.Name}' cannot have a default value");
+
+                List<object> vv = new List<object>();
+                if (validValues != null) {
+                    foreach (var validValue in validValues) {
+                        vv.Add(GetValueFromString(property.Property.PropertyType, validValue, out _));
+                    }
+                }
 
                 var v = GetValueFromString(property.Property.PropertyType, property.Option.DefaultValue, out _);
                 if (v == null)

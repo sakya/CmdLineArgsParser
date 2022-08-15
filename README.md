@@ -13,7 +13,7 @@ When defining the options you can specify:
 - **Verb**: boolean indicating it the option is a verb. You can only have one option set as verb and must be passed as the first argument.
 - **OnlyForVerbs**: a list of verbs this option is valid for separated by a semicolon 
 - **Required**: boolean indicating if the option is required
-- **DefaultValue**: the option default value. A verb or bool option cannot have a default value
+- **DefaultValue**: the option default value. A verb, bool, array or list option cannot have a default value
 - **ValidValues**: a list of valid values separated by a semicolon (e.g. "value1;value2")
 - **MutuallyExclusive**: a string to set the option group name. More than one Option with the same MutuallyExclusive value cannot be set.
 - **Description**: the description of the option
