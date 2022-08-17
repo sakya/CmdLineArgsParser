@@ -11,7 +11,7 @@ namespace CmdLineArgsParser
     public partial class Parser
     {
         /// <summary>
-        /// Writes options to the <see cref="Console"/>
+        /// Writes usage information tow the <see cref="Console"/>
         /// </summary>
         /// <param name="assemblyName">The assembly name to use for the usage line (defaults to the calling assembly name)</param>
         /// <param name="columnsForName">The number of columns to reserve for option names (default: 0)</param>

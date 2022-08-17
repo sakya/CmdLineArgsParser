@@ -50,6 +50,10 @@ namespace CmdLineArgsParser
         private OptionProperty _verbOption;
         private object _verbValue;
 
+        /// <summary>
+        /// Create a new Parser with the given <see cref="ParserSettings"/>
+        /// </summary>
+        /// <param name="settings">The parser settings</param>
         public Parser(ParserSettings settings = null)
         {
             if (settings == null)
@@ -57,6 +61,9 @@ namespace CmdLineArgsParser
             Settings = settings;
         }
 
+        /// <summary>
+        /// The parser <see cref="ParserSettings"/>
+        /// </summary>
         public ParserSettings Settings { get; private set; }
 
         #region private operations

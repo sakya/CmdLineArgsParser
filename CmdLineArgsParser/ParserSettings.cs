@@ -5,6 +5,9 @@ namespace CmdLineArgsParser
     /// </summary>
     public class ParserSettings
     {
+        /// <summary>
+        /// Create a new <see cref="ParserSettings"/>
+        /// </summary>
         public ParserSettings()
         {
             DateTimeFormat = null;

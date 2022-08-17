@@ -4,13 +4,25 @@ using CmdLineArgsParser.Interfaces;
 
 namespace CmdLineArgsParser.Attributes
 {
+    /// <summary>
+    /// Attribute to define an option
+    /// </summary>
     public class OptionAttribute : System.Attribute, IDescription
     {
+        /// <summary>
+        /// Create a new <see cref="OptionAttribute"/> with the given name
+        /// </summary>
+        /// <param name="name">The option name</param>
         public OptionAttribute(string name)
         {
             Name = name;
         }
 
+        /// <summary>
+        /// Create a new <see cref="OptionAttribute"/> with the given name ans short name
+        /// </summary>
+        /// <param name="name">The option name</param>
+        /// <param name="shortName">The option short name</param>
         public OptionAttribute(string name, char shortName)
         {
             Name = name;
@@ -68,6 +80,10 @@ namespace CmdLineArgsParser.Attributes
         /// </summary>
         public string MutuallyExclusive { get; set; }
 
+        /// <summary>
+        /// Get the option valid values
+        /// </summary>
+        /// <returns></returns>
         public string[] GetValidValues()
         {
             if (!string.IsNullOrEmpty(ValidValues))
@@ -75,6 +91,10 @@ namespace CmdLineArgsParser.Attributes
             return null;
         }
 
+        /// <summary>
+        /// Get the option "only for verbs" values
+        /// </summary>
+        /// <returns></returns>
         public string[] GetOnlyForVerbs()
         {
             if (!string.IsNullOrEmpty(OnlyForVerbs))

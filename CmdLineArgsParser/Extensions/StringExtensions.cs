@@ -3,8 +3,16 @@ using System.Text;
 
 namespace CmdLineArgsParser.Extensions
 {
+    /// <summary>
+    /// String extensions
+    /// </summary>
     public static class StringExtensions
     {
+        /// <summary>
+        /// Turn the first character of a string to uppercase
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         public static string Capitalize(this string str)
         {
             if (string.IsNullOrEmpty(str))
