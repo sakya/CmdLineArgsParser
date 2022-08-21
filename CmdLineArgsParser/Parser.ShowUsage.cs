@@ -11,6 +11,18 @@ namespace CmdLineArgsParser
     public partial class Parser
     {
         /// <summary>
+        /// Writes information lines
+        /// AssemblyTitle AssemblyVersion
+        /// AssemblyCopyright
+        /// AssemblyDescription
+        /// </summary>
+        /// <param name="includeDescription">Define if the AssemblyDescription should be printed</param>
+        public void ShowInfo(bool includeDescription = true)
+        {
+            ShowAssemblyInformation(Assembly.GetCallingAssembly(), includeDescription);
+        }
+
+        /// <summary>
         /// Writes usage information tow the <see cref="Console"/>
         /// </summary>
         /// <param name="assemblyName">The assembly name to use for the usage line (defaults to the calling assembly name)</param>
@@ -24,8 +36,6 @@ namespace CmdLineArgsParser
             ValidateOptionsType<T>();
 
             var cAssembly = Assembly.GetCallingAssembly();
-            ShowAssemblyInformation(cAssembly);
-
             var properties = GetProperties<T>();
             _verbOption = properties.FirstOrDefault(p => p.Option.Verb);
 
@@ -52,7 +62,7 @@ namespace CmdLineArgsParser
 
         #region private operations
 
-        private void ShowAssemblyInformation(Assembly assembly)
+        private void ShowAssemblyInformation(Assembly assembly, bool includeDescription = false)
         {
             bool newline = false;
             if (assembly.GetCustomAttribute(typeof(AssemblyTitleAttribute)) is AssemblyTitleAttribute ta) {
@@ -70,7 +80,7 @@ namespace CmdLineArgsParser
                 newline = false;
             }
 
-            if (assembly.GetCustomAttribute(typeof(AssemblyDescriptionAttribute)) is AssemblyDescriptionAttribute da) {
+            if (includeDescription && assembly.GetCustomAttribute(typeof(AssemblyDescriptionAttribute)) is AssemblyDescriptionAttribute da) {
                 Console.WriteLine(da.Description);
                 newline = true;
             }

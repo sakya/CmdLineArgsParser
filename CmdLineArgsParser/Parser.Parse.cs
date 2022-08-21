@@ -228,11 +228,11 @@ namespace CmdLineArgsParser
 
         private void SetArrayOptionValue(OptionProperty option, object obj, object value)
         {
-            Array array = option.Property.GetValue(obj) as Array;
+            var array = option.Property.GetValue(obj) as Array;
             if (array == null) {
                 array = Array.CreateInstance(option.Property.PropertyType.GetElementType(), 1);
             } else {
-                Type elementType = array.GetType().GetElementType();
+                var elementType = array.GetType().GetElementType();
                 if (elementType != null) {
                     Array newArray = Array.CreateInstance(elementType, array.Length + 1);
                     Array.Copy(array, newArray, Math.Min(array.Length, newArray.Length));
@@ -246,7 +246,7 @@ namespace CmdLineArgsParser
 
         private void SetListOptionValue(OptionProperty option, object obj, object value)
         {
-            IList list = option.Property.GetValue(obj) as IList;
+            var list = option.Property.GetValue(obj) as IList;
             if (list == null) {
                 Type genericListType = typeof(List<>).MakeGenericType(option.Property.PropertyType.GetGenericArguments().FirstOrDefault());
                 list = (IList)Activator.CreateInstance(genericListType);
@@ -268,7 +268,7 @@ namespace CmdLineArgsParser
         {
             // Check valid values:
             if (option.Option.ValidValues?.Length > 0) {
-                bool valueOk = false;
+                var valueOk = false;
                 foreach (var vvs in option.Option.GetValidValues()) {
                     var vv = GetValueFromString(option.Property.PropertyType, vvs, out _);
                     if (value.Equals(vv)) {
@@ -290,7 +290,7 @@ namespace CmdLineArgsParser
                 if (_verbValue == null) {
                     errors.Add(new ParserError(option.Option.Name, $"Option '{ option.Option.Name }' can be set only for specific verbs but no verb has been specified"));
                 } else {
-                    bool valueOk = false;
+                    var valueOk = false;
                     foreach (var ofvs in option.Option.GetOnlyForVerbs()) {
                         var ofv = GetValueFromString(_verbOption.Property.PropertyType, ofvs, out _);
                         if (_verbValue.Equals(ofv)) {

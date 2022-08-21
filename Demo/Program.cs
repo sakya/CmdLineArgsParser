@@ -17,6 +17,7 @@ namespace Demo
             };
 
             var parser = new Parser(new ParserSettings());
+            parser.ShowInfo(true);
             parser.ShowUsage<Options>();
 
             var options = parser.Parse<Options>(testArgs, out var errors);
