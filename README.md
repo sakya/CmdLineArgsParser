@@ -33,8 +33,8 @@ Supported option type:
 The `Parse` method parses the given arguments and returns an instance of the options class. 
 It also checks for errors in the passed arguments (missing required arguments, wrong argument names...) and returns them in `errors`
 
-## ShowUsage
-The `ShowUsage` method prints to the console the options and the help text
+## ShowInfo
+The `ShowInfo` method prints to the console the assembly title, version and description
 
 Example output:
 ```
@@ -42,7 +42,12 @@ CmdLineArgsParser Demo v0.1.0.0
 Copyright © 2022, Paolo Iommarini
 
 Some words about the program
+```
+## ShowUsage
+The `ShowUsage` method prints to the console the options and the help text
 
+Example output:
+```
 Usage:
 Demo.dll action --input=VALUE [OPTIONS]
 

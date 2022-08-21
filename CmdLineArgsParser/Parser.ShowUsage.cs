@@ -11,10 +11,11 @@ namespace CmdLineArgsParser
     public partial class Parser
     {
         /// <summary>
-        /// Writes information lines
-        /// AssemblyTitle AssemblyVersion
-        /// AssemblyCopyright
-        /// AssemblyDescription
+        /// Writes information lines<br/>
+        /// <br/>
+        /// AssemblyTitle AssemblyVersion<br/>
+        /// AssemblyCopyright<br/>
+        /// AssemblyDescription<br/>
         /// </summary>
         /// <param name="includeDescription">Define if the AssemblyDescription should be printed</param>
         public void ShowInfo(bool includeDescription = true)
