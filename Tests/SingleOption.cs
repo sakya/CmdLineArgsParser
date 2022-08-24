@@ -240,4 +240,19 @@ public class SingleOption : BaseTest
             out Errors);
         CheckPropertyValue("OptionForVerb1", res, true);
     }
+
+    [Test]
+    public void Uri()
+    {
+        var res = Parser.Parse<Options>(
+            new []
+            {
+                "--uri",
+                "https://google.com"
+            },
+            out Errors);
+        CheckPropertyValue("Uri", res, new Uri("https://google.com"));
+
+        Assert.Pass();
+    }
 }

@@ -73,6 +73,14 @@ public class Errors : BaseTest
             out Errors);
         CheckErrors(new [] { "Invalid value for option 'double' (expected double): xyz" });
 
+        Parser.Parse<Options>(
+            new []
+            {
+                "--uri", "xyz"
+            },
+            out Errors);
+        CheckErrors(new [] { "Invalid value for option 'uri' (expected Uri): xyz" });
+
         Assert.Pass();
     }
 

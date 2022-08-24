@@ -244,6 +244,14 @@ namespace CmdLineArgsParser
                 }
                 return null;
             }
+
+            if (propertyType == typeof(Uri)) {
+                expectedType = "Uri";
+                if (Uri.IsWellFormedUriString(value, UriKind.Absolute))
+                    return new Uri(value);
+                return null;
+            }
+
             return null;
         }
 

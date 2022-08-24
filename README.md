@@ -26,6 +26,7 @@ Supported option type:
 - **int**: set to the value after the argument (e.g. `--intOpt 5`)
 - **double/float**: set to the value after the argument (e.g. `--doubleOpt 5.2`)
 - **DateTime**: set to the value after the argument (e.g. `--dateTimeOpt "12/01/2022 3:54:23 PM"`)
+- **Uri**: set to the value after the argument (e.g. `--uriOpt https://host/address`)
 - **Array of one of the supported built-in types**: one value added for each argument value (e.g. `--input /home/user --input /home/user2`)
 - **List of one of the supported built-in types**: one value added for each argument value
 
