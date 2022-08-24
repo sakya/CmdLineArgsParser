@@ -235,14 +235,7 @@ namespace CmdLineArgsParser
 
             if (propertyType == typeof(DateTime)) {
                 expectedType = "DateTime";
-                if (!string.IsNullOrEmpty(Settings.DateTimeFormat)) {
-                    if (DateTime.TryParseExact(value, Settings.DateTimeFormat, null, DateTimeStyles.None, out var dtValue))
-                        return dtValue;
-                } else {
-                    if (DateTime.TryParse(value, out var dtValue))
-                        return dtValue;
-                }
-                return null;
+                return GetDateTimeValueFromString(value);
             }
 
             if (propertyType == typeof(Uri)) {
@@ -250,6 +243,19 @@ namespace CmdLineArgsParser
                 if (Uri.IsWellFormedUriString(value, UriKind.Absolute))
                     return new Uri(value);
                 return null;
+            }
+
+            return null;
+        }
+
+        private DateTime? GetDateTimeValueFromString(string value)
+        {
+            if (!string.IsNullOrEmpty(Settings.DateTimeFormat)) {
+                if (DateTime.TryParseExact(value, Settings.DateTimeFormat, null, DateTimeStyles.None, out var dtValue))
+                    return dtValue;
+            } else {
+                if (DateTime.TryParse(value, out var dtValue))
+                    return dtValue;
             }
 
             return null;
