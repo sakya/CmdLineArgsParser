@@ -87,6 +87,9 @@ namespace CmdLineArgsParser
 
                 ValidateName(property, names, shortNames);
 
+                if (string.Compare(property.Option.Section, DefaultSection, StringComparison.InvariantCultureIgnoreCase) == 0)
+                    throw new Exception($"Cannot set section name to the default value '{DefaultSection}'.");
+
                 if (opt.Verb) {
                     if (verb != null)
                         throw new Exception("Only one option can be defined as verb");

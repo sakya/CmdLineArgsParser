@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,8 @@ namespace CmdLineArgsParser
 {
     public partial class Parser
     {
+        private const string DefaultSection = "General";
+
         /// <summary>
         /// Writes information lines<br/>
         /// <br/>
@@ -50,12 +53,13 @@ namespace CmdLineArgsParser
                 ShowVerbUsage(_verbOption, columnsForName);
             }
 
-            var sections = properties.GroupBy(p => p.Option.Section);
-            foreach (var section in sections) {
-                Console.WriteLine($"{ (string.IsNullOrEmpty(section.Key) ? "General" : section.Key) }:");
-                foreach (var property in section.Where(p => !p.Option.Verb).OrderBy(p => p.Option.Name)) {
-                    ShowOptionUsage(property, columnsForName, useEqualSyntax);
-                }
+            var sections = GetSections(properties);
+            if (sections.TryGetValue(DefaultSection, out var general)) {
+                ShowSectionUsage(DefaultSection, general);
+            }
+
+            foreach (var sectionName in sections.Keys.Where(k => k != DefaultSection).OrderBy(k => k)) {
+                ShowSectionUsage(sectionName, sections[sectionName]);
             }
 
             _verbOption = null;
@@ -144,8 +148,49 @@ namespace CmdLineArgsParser
                     }
                 }
             }
+        }
 
+        private void ShowSectionUsage(string section, IEnumerable<OptionProperty> properties, int columnsForName = 30, bool useEqualSyntax = true)
+        {
             Console.WriteLine();
+            Console.WriteLine($"{ (string.IsNullOrEmpty(section) ? DefaultSection : section) }:");
+            foreach (var property in properties.OrderBy(p => p.Option.Name)) {
+                ShowOptionUsage(property, columnsForName, useEqualSyntax);
+            }
+        }
+
+        private Dictionary<string, List<OptionProperty>> GetSections(IEnumerable<OptionProperty> properties)
+        {
+            var res = new Dictionary<string, List<OptionProperty>>();
+            foreach (var p in properties) {
+                if (p.Option.Verb)
+                    continue;
+
+                if (!string.IsNullOrEmpty(p.Option.Section)) {
+                    if (res.TryGetValue(p.Option.Section, out var list)) {
+                        list.Add(p);
+                    } else {
+                        res[p.Option.Section] = new List<OptionProperty>() { p };
+                    }
+                } else if (!string.IsNullOrEmpty(p.Option.OnlyForVerbs)) {
+                    foreach (var v in p.Option.GetOnlyForVerbs()) {
+                        var verb = GetValueFromString(_verbOption.Property.PropertyType, v, out _);
+                        if (res.TryGetValue(verb.ToString(), out var list)) {
+                            list.Add(p);
+                        } else {
+                            res[verb.ToString()] = new List<OptionProperty>() { p };
+                        }
+                    }
+                } else {
+                    if (res.TryGetValue(DefaultSection, out var list)) {
+                        list.Add(p);
+                    } else {
+                        res[DefaultSection] = new List<OptionProperty>() { p };
+                    }
+                }
+            }
+
+            return res;
         }
 
         private void ShowOptionUsage(OptionProperty property, int columnsForName, bool useEqualSyntax)
