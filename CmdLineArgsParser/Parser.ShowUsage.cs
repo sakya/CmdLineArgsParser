@@ -159,40 +159,6 @@ namespace CmdLineArgsParser
             }
         }
 
-        private Dictionary<string, List<OptionProperty>> GetSections(IEnumerable<OptionProperty> properties)
-        {
-            var res = new Dictionary<string, List<OptionProperty>>();
-            foreach (var p in properties) {
-                if (p.Option.Verb)
-                    continue;
-
-                if (!string.IsNullOrEmpty(p.Option.Section)) {
-                    if (res.TryGetValue(p.Option.Section, out var list)) {
-                        list.Add(p);
-                    } else {
-                        res[p.Option.Section] = new List<OptionProperty>() { p };
-                    }
-                } else if (!string.IsNullOrEmpty(p.Option.OnlyForVerbs)) {
-                    foreach (var v in p.Option.GetOnlyForVerbs()) {
-                        var verb = GetValueFromString(_verbOption.Property.PropertyType, v, out _);
-                        if (res.TryGetValue(verb.ToString(), out var list)) {
-                            list.Add(p);
-                        } else {
-                            res[verb.ToString()] = new List<OptionProperty>() { p };
-                        }
-                    }
-                } else {
-                    if (res.TryGetValue(DefaultSection, out var list)) {
-                        list.Add(p);
-                    } else {
-                        res[DefaultSection] = new List<OptionProperty>() { p };
-                    }
-                }
-            }
-
-            return res;
-        }
-
         private void ShowOptionUsage(OptionProperty property, int columnsForName, bool useEqualSyntax)
         {
             var opt = property.Option;
@@ -247,6 +213,40 @@ namespace CmdLineArgsParser
             }
 
             Console.WriteLine(sb.ToString());
+        }
+
+        private Dictionary<string, List<OptionProperty>> GetSections(IEnumerable<OptionProperty> properties)
+        {
+            var res = new Dictionary<string, List<OptionProperty>>();
+            foreach (var p in properties) {
+                if (p.Option.Verb)
+                    continue;
+
+                if (!string.IsNullOrEmpty(p.Option.Section)) {
+                    if (res.TryGetValue(p.Option.Section, out var list)) {
+                        list.Add(p);
+                    } else {
+                        res[p.Option.Section] = new List<OptionProperty>() { p };
+                    }
+                } else if (!string.IsNullOrEmpty(p.Option.OnlyForVerbs)) {
+                    foreach (var v in p.Option.GetOnlyForVerbs()) {
+                        var verb = GetValueFromString(_verbOption.Property.PropertyType, v, out _);
+                        if (res.TryGetValue(verb.ToString(), out var list)) {
+                            list.Add(p);
+                        } else {
+                            res[verb.ToString()] = new List<OptionProperty>() { p };
+                        }
+                    }
+                } else {
+                    if (res.TryGetValue(DefaultSection, out var list)) {
+                        list.Add(p);
+                    } else {
+                        res[DefaultSection] = new List<OptionProperty>() { p };
+                    }
+                }
+            }
+
+            return res;
         }
 
         private string GetShowValidValues(OptionProperty property)
