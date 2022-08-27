@@ -63,16 +63,24 @@ General:
   -i, --input=VALUE           The input file full path
   --list=VALUE                An option you can set multiple times
                               This option can be set multiple times
-  -o, --output=VALUE          The output file full path
-                              Valid for action: Backup, Copy
-  -w, --overwrite             Overwrite output without warning
-                              Valid for action: Copy, Backup
   -r, --retry=VALUE           The number of time the command is retried in case of error
   --withdefaultvalue=VALUE    An option with a default value
                               Default value: 5
   --withValues=VALUE          An option with a list of valid values
                               Valid values: value1, value2
   -y, --yes                   Assume yes as a reply to all the questions
+
+Backup:
+  -o, --output=VALUE          The output file full path
+                              Valid for action: Backup, Copy
+  -w, --overwrite             Overwrite output without warning
+                              Valid for action: Copy, Backup
+
+Copy:
+  -o, --output=VALUE          The output file full path
+                              Valid for action: Backup, Copy
+  -w, --overwrite             Overwrite output without warning
+                              Valid for action: Copy, Backup
 ```
 
 ## Example
