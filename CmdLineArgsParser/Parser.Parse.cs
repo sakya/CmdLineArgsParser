@@ -61,7 +61,7 @@ namespace CmdLineArgsParser
                 if (arg.StartsWith("--")) {
                     CheckLastOption(lastOption, errors);
                     lastOption = ParseNameOption(res, properties, arg, errors);
-                } else if (arg.StartsWith(("-"))) {
+                } else if (arg.StartsWith("-") && (lastOption == null || lastOption.Set)) {
                     CheckLastOption(lastOption, errors);
                     lastOption = ParseShortNameOption(res, properties, arg, errors);
                 } else {

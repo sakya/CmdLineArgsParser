@@ -99,6 +99,14 @@ public class SingleOption : BaseTest
             out Errors);
         CheckPropertyValue("IntNumber", res, 5);
 
+        res = Parser.Parse<Options>(
+            new []
+            {
+                "--int", "-5"
+            },
+            out Errors);
+        CheckPropertyValue("IntNumber", res, -5);
+
         Assert.Pass();
     }
 

@@ -13,7 +13,7 @@ namespace Demo
                 "backup",
                 "--input", "/home/user/file",
                 "-yw",
-                "-r", "5"
+                "-r", "-5"
             };
 
             var parser = new Parser(new ParserSettings());
